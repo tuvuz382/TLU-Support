@@ -80,7 +80,14 @@ FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
 FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
 FIREBASE_MEASUREMENT_ID=your_measurement_id
 ```
-
+FIREBASE_API_KEY="AIzaSyB12D-9YzKxyTGJkK1or9bA5FXRfinogjc"
+FIREBASE_APP_ID="1:1043045561481:web:934deeaecf2e6eccde4258"
+FIREBASE_MESSAGING_SENDER_ID="1043045561481"
+FIREBASE_PROJECT_ID="myapp-81c15"
+FIREBASE_AUTH_DOMAIN="myapp-81c15.firebaseapp.com"
+FIREBASE_STORAGE_BUCKET="myapp-81c15.firebasestorage.app"
+#FIREBASE_DATABASE_URL=https://my-flutter-app-default-rtdb.firebaseio.com/
+FIREBASE_MEASUREMENT_ID="G-SNX5S30GBL"
 ## Sử dụng
 
 1. **Đăng nhập:**
