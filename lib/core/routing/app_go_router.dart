@@ -14,6 +14,12 @@ import '../../features/schedule/presentation/pages/schedule_page.dart';
 import '../../features/notes/presentation/pages/notes_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 
+// Features - Document
+import '../../features/document/presentation/pages/document_list_page.dart';
+import '../../features/document/presentation/pages/document_detail_page.dart';
+import '../../features/document/presentation/pages/document_filter_page.dart';
+import '../../features/document/domain/entities/document_entity.dart';
+
 // Layout
 import '../../core/presentation/layouts/main_layout.dart';
 
@@ -26,13 +32,25 @@ class AppGoRouter {
         path: AppRoutes.login,
         builder: (context, state) => const LoginPage(),
       ),
+      GoRoute(
+        path: AppRoutes.documents,
+        builder: (context, state) => const DocumentListPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.documentDetail,
+        builder: (context, state) {
+          final document = state.extra as DocumentEntity;
+          return DocumentDetailPage(document: document);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.documentFilter,
+        builder: (context, state) => const DocumentFilterPage(),
+      ),
       ShellRoute(
         builder: (context, state, child) {
           final currentIndex = _getCurrentIndex(state.matchedLocation);
-          return MainLayout(
-            currentIndex: currentIndex,
-            child: child,
-          );
+          return MainLayout(currentIndex: currentIndex, child: child);
         },
         routes: [
           GoRoute(
@@ -58,7 +76,7 @@ class AppGoRouter {
       final user = FirebaseAuth.instance.currentUser;
       final loggedIn = user != null;
       final loggingIn = state.matchedLocation == AppRoutes.login;
-      
+
       if (!loggedIn && !loggingIn) return AppRoutes.login;
       if (loggedIn && loggingIn) return AppRoutes.home;
       return null;

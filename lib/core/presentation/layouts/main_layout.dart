@@ -77,23 +77,21 @@ class _MainLayoutState extends State<MainLayout> {
     required VoidCallback onTap,
   }) {
     final isSelected = widget.currentIndex == index;
-    
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.white.withValues(alpha: 0.2) : Colors.transparent,
+          color: isSelected
+              ? Colors.white.withValues(alpha: 0.2)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 24,
-            ),
+            Icon(icon, color: Colors.white, size: 24),
             const SizedBox(height: 4),
             Text(
               label,
