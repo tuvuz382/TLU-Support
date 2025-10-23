@@ -94,7 +94,7 @@ class ProfilePage extends StatelessWidget {
                   _buildMenuItem(
                     icon: Icons.person,
                     title: 'Thông tin cá nhân',
-                    onTap: () {},
+                    onTap: () => context.go('/personal-info'),
                   ),
                   _buildMenuItem(
                     icon: Icons.settings,

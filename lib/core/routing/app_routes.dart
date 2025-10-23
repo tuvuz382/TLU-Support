@@ -4,4 +4,5 @@ class AppRoutes {
   static const String schedule = '/schedule';
   static const String notes = '/notes';
   static const String profile = '/profile';
+  static const String personalInfo = '/personal-info';
 }
