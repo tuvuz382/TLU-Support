@@ -15,6 +15,10 @@ import '../../features/notes/presentation/pages/notes_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/profile/presentation/pages/personal_info_page.dart';
 
+// Features - Notifications
+import '../../features/notifications/presentation/pages/notifications_page.dart';
+import '../../features/notifications/presentation/pages/notification_detail_page.dart';
+
 // Layout
 import '../../core/presentation/layouts/main_layout.dart';
 
@@ -57,6 +61,17 @@ class AppGoRouter {
       GoRoute(
         path: AppRoutes.personalInfo,
         builder: (context, state) => const PersonalInfoPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.notifications,
+        builder: (context, state) => const NotificationsPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.notificationDetail,
+        builder: (context, state) {
+          final notification = state.extra as NotificationItem?;
+          return NotificationDetailPage(notification: notification!);
+        },
       ),
     ],
     redirect: (context, state) {
