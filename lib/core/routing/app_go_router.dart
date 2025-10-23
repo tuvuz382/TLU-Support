@@ -13,6 +13,7 @@ import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/schedule/presentation/pages/schedule_page.dart';
 import '../../features/notes/presentation/pages/notes_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
+import '../../features/profile/presentation/pages/personal_info_page.dart';
 
 // Layout
 import '../../core/presentation/layouts/main_layout.dart';
@@ -52,6 +53,10 @@ class AppGoRouter {
             builder: (context, state) => const ProfilePage(),
           ),
         ],
+      ),
+      GoRoute(
+        path: AppRoutes.personalInfo,
+        builder: (context, state) => const PersonalInfoPage(),
       ),
     ],
     redirect: (context, state) {
