@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '/core/presentation/theme/app_colors.dart';
+import '/features/data_generator/data/services/data_generator_service.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -17,6 +18,124 @@ class ProfilePage extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Lỗi khi đăng xuất: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _generateSampleData(BuildContext context) async {
+    try {
+      // Hiển thị dialog loading
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      final dataGeneratorService = DataGeneratorService();
+      await dataGeneratorService.generateSampleData();
+
+      // Đóng dialog loading
+      if (context.mounted) {
+        Navigator.of(context).pop();
+        
+        // Hiển thị thông báo thành công
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Sinh dữ liệu mẫu thành công!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      // Đóng dialog loading nếu có lỗi
+      if (context.mounted) {
+        Navigator.of(context).pop();
+        
+        // Hiển thị thông báo lỗi
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi khi sinh dữ liệu: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _showDeleteConfirmationDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Xác nhận xóa dữ liệu'),
+          content: const Text(
+            'Bạn có chắc chắn muốn xóa toàn bộ dữ liệu mẫu đã sinh?\n\n'
+            'Hành động này không thể hoàn tác!',
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Hủy'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text(
+                'Xóa',
+                style: TextStyle(color: Colors.red),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _deleteAllSampleData(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _deleteAllSampleData(BuildContext context) async {
+    try {
+      // Hiển thị dialog loading
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      final dataGeneratorService = DataGeneratorService();
+      await dataGeneratorService.deleteAllSampleData();
+
+      // Đóng dialog loading
+      if (context.mounted) {
+        Navigator.of(context).pop();
+        
+        // Hiển thị thông báo thành công
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Xóa dữ liệu mẫu thành công!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      // Đóng dialog loading nếu có lỗi
+      if (context.mounted) {
+        Navigator.of(context).pop();
+        
+        // Hiển thị thông báo lỗi
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi khi xóa dữ liệu: $e'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -96,6 +215,21 @@ class ProfilePage extends StatelessWidget {
                     title: 'Thông tin cá nhân',
                     onTap: () => context.go('/personal-info'),
                   ),
+                  // Chỉ hiển thị các nút quản lý dữ liệu cho admin123@gmail.com
+                  if (user?.email == 'admin123@gmail.com') ...[
+                    _buildMenuItem(
+                      icon: Icons.data_object,
+                      title: 'Sinh dữ liệu mẫu',
+                      onTap: () => _generateSampleData(context),
+                    ),
+                    _buildMenuItem(
+                      icon: Icons.delete_forever,
+                      title: 'Xóa dữ liệu mẫu',
+                      onTap: () => _showDeleteConfirmationDialog(context),
+                      isDestructive: true,
+                    ),
+                    const Divider(),
+                  ],
                   _buildMenuItem(
                     icon: Icons.settings,
                     title: 'Cài đặt',
