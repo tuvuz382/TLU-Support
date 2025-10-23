@@ -147,13 +147,13 @@ class HomePage extends StatelessWidget {
                       context,
                       icon: Icons.people,
                       label: 'Đội ngũ giảng viên',
-                      onTap: () {},
+                      onTap: () => context.go('/teachers'),
                     ),
                     _buildGridItem(
                       context,
                       icon: Icons.school,
                       label: 'Chương trình đào tạo',
-                      onTap: () {},
+                      onTap: () => context.go('/subjects'),
                     ),
                     _buildGridItem(
                       context,
