@@ -19,6 +19,11 @@ import '../../features/profile/presentation/pages/personal_info_page.dart';
 import '../../features/notifications/presentation/pages/notifications_page.dart';
 import '../../features/notifications/presentation/pages/notification_detail_page.dart';
 
+// Features - Scholarship
+import '../../features/scholarship/presentation/pages/scholarship_list_page.dart';
+import '../../features/scholarship/presentation/pages/scholarship_detail_page.dart';
+import '../../features/scholarship/presentation/pages/registered_scholarships_page.dart';
+
 // Layout
 import '../../core/presentation/layouts/main_layout.dart';
 
@@ -72,6 +77,18 @@ class AppGoRouter {
           final notification = state.extra as NotificationItem?;
           return NotificationDetailPage(notification: notification!);
         },
+      ),
+      GoRoute(
+        path: AppRoutes.scholarshipList,
+        builder: (context, state) => const ScholarshipListPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.scholarshipDetail,
+        builder: (context, state) => const ScholarshipDetailPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.registeredScholarships,
+        builder: (context, state) => const RegisteredScholarshipsPage(),
       ),
     ],
     redirect: (context, state) {
