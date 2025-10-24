@@ -8,7 +8,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       body: Column(
         children: [
@@ -97,11 +96,17 @@ class HomePage extends StatelessWidget {
                         Row(
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.search, color: Colors.white),
+                              icon: const Icon(
+                                Icons.search,
+                                color: Colors.white,
+                              ),
                               onPressed: () {},
                             ),
                             IconButton(
-                              icon: const Icon(Icons.notifications, color: Colors.white),
+                              icon: const Icon(
+                                Icons.notifications,
+                                color: Colors.white,
+                              ),
                               onPressed: () => context.go('/notifications'),
                             ),
                           ],
@@ -113,7 +118,7 @@ class HomePage extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Grid chức năng
           Expanded(
             child: Container(
@@ -135,13 +140,13 @@ class HomePage extends StatelessWidget {
                       context,
                       icon: Icons.calendar_today,
                       label: 'Lịch học',
-                      onTap: () => context.go('/schedule'),
+                      onTap: () => context.push('/schedule'),
                     ),
                     _buildGridItem(
                       context,
                       icon: Icons.description,
                       label: 'Tài liệu',
-                      onTap: () {},
+                      onTap: () => context.push('/documents'),
                     ),
                     _buildGridItem(
                       context,
@@ -159,7 +164,7 @@ class HomePage extends StatelessWidget {
                       context,
                       icon: Icons.note,
                       label: 'Ghi chú',
-                      onTap: () => context.go('/notes'),
+                      onTap: () => context.push('/notes'),
                     ),
                     _buildGridItem(
                       context,
@@ -207,11 +212,7 @@ class HomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: 32,
-              color: AppColors.primary,
-            ),
+            Icon(icon, size: 32, color: AppColors.primary),
             const SizedBox(height: 8),
             Text(
               label,
