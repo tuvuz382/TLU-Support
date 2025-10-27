@@ -39,3 +39,4 @@ class GhiChuEntity extends Equatable {
         monHoc,
       ];
 }
+

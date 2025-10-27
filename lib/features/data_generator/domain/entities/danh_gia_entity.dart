@@ -49,3 +49,4 @@ class DanhGiaEntity extends Equatable {
         ngayDanhGia,
       ];
 }
+
