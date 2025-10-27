@@ -9,4 +9,7 @@ class AppRoutes {
   static const String notificationDetail = '/notification-detail';
   static const String documents = '/documents';
   static const String documentDetail = '/document-detail';
+  static const String scholarshipList = '/scholarship-list';
+  static const String scholarshipDetail = '/scholarship-detail';
+  static const String registeredScholarships = '/registered-scholarships';
 }

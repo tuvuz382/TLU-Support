@@ -170,7 +170,7 @@ class HomePage extends StatelessWidget {
                       context,
                       icon: Icons.card_giftcard,
                       label: 'Học bổng',
-                      onTap: () {},
+                      onTap: () => context.go('/scholarship-list'),
                     ),
                     _buildGridItem(
                       context,
