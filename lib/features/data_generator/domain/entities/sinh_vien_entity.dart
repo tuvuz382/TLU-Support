@@ -69,3 +69,4 @@ class SinhVienEntity extends Equatable {
         anhDaiDien,
       ];
 }
+

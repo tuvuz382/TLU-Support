@@ -39,3 +39,8 @@ class ThongBaoEntity extends Equatable {
         ngayDang,
       ];
 }
+
+
+
+
+

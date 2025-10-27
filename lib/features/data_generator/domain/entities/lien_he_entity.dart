@@ -39,3 +39,4 @@ class LienHeEntity extends Equatable {
         trangThaiPhanHoi,
       ];
 }
+

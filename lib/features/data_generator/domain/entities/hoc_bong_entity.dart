@@ -49,3 +49,4 @@ class HocBongEntity extends Equatable {
         trangThaiDangKy,
       ];
 }
+
