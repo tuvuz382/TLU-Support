@@ -140,13 +140,13 @@ class HomePage extends StatelessWidget {
                       context,
                       icon: Icons.calendar_today,
                       label: 'Lịch học',
-                      onTap: () => context.push('/schedule'),
+                      onTap: () => context.go('/schedule'),
                     ),
                     _buildGridItem(
                       context,
                       icon: Icons.description,
                       label: 'Tài liệu',
-                      onTap: () => context.push('/documents'),
+                      onTap: () => context.go('/documents'),
                     ),
                     _buildGridItem(
                       context,
@@ -164,7 +164,7 @@ class HomePage extends StatelessWidget {
                       context,
                       icon: Icons.note,
                       label: 'Ghi chú',
-                      onTap: () => context.push('/notes'),
+                      onTap: () => context.go('/notes'),
                     ),
                     _buildGridItem(
                       context,
