@@ -1,18 +1,30 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '/core/presentation/theme/app_colors.dart';
 import '/features/data_generator/data/services/data_generator_service.dart';
+import '/features/auth/domain/repositories/auth_repository.dart';
+import '/features/auth/data/repositories/auth_repository_impl.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  late final AuthRepository _authRepository;
+
+  @override
+  void initState() {
+    super.initState();
+    _authRepository = AuthRepositoryImpl();
+  }
 
   Future<void> _signOut(BuildContext context) async {
     try {
-      await FirebaseAuth.instance.signOut();
-      if (context.mounted) {
-        context.go('/login_page');
-      }
+      await _authRepository.signOut();
+      // Navigation sẽ được xử lý tự động bởi GoRouter khi auth state thay đổi
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -145,7 +157,7 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = _authRepository.getCurrentUser();
     
     return Scaffold(
       appBar: AppBar(
