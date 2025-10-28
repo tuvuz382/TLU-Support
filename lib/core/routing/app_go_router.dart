@@ -19,6 +19,18 @@ import '../../features/teachers/presentation/pages/teacher_detail_page.dart';
 import '../../features/teachers/presentation/pages/add_teacher_page.dart';
 import '../../features/subjects/presentation/pages/subjects_page.dart';
 import '../../features/subjects/presentation/pages/subject_detail_page.dart';
+import '../../features/profile/presentation/pages/personal_info_page.dart';
+import '../../features/documents/presentation/pages/documents_page.dart';
+import '../../features/documents/presentation/pages/document_detail_page.dart';
+
+// Features - Notifications
+import '../../features/notifications/presentation/pages/notifications_page.dart';
+import '../../features/notifications/presentation/pages/notification_detail_page.dart';
+
+// Features - Scholarship
+import '../../features/scholarship/presentation/pages/scholarship_list_page.dart';
+import '../../features/scholarship/presentation/pages/scholarship_detail_page.dart';
+import '../../features/scholarship/presentation/pages/registered_scholarships_page.dart';
 
 // Layout
 import '../../core/presentation/layouts/main_layout.dart';
@@ -35,10 +47,7 @@ class AppGoRouter {
       ShellRoute(
         builder: (context, state, child) {
           final currentIndex = _getCurrentIndex(state.matchedLocation);
-          return MainLayout(
-            currentIndex: currentIndex,
-            child: child,
-          );
+          return MainLayout(currentIndex: currentIndex, child: child);
         },
         routes: [
           GoRoute(
@@ -96,12 +105,50 @@ class AppGoRouter {
           ),
         ],
       ),
+      GoRoute(
+        path: AppRoutes.personalInfo,
+        builder: (context, state) => const PersonalInfoPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.notifications,
+        builder: (context, state) => const NotificationsPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.documents,
+        builder: (context, state) => const DocumentsPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.documentDetail,
+        builder: (context, state) {
+          final document = state.extra;
+          return DocumentDetailPage(document: document as dynamic);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.notificationDetail,
+        builder: (context, state) {
+          final notification = state.extra as NotificationItem?;
+          return NotificationDetailPage(notification: notification!);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.scholarshipList,
+        builder: (context, state) => const ScholarshipListPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.scholarshipDetail,
+        builder: (context, state) => const ScholarshipDetailPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.registeredScholarships,
+        builder: (context, state) => const RegisteredScholarshipsPage(),
+      ),
     ],
     redirect: (context, state) {
       final user = FirebaseAuth.instance.currentUser;
       final loggedIn = user != null;
       final loggingIn = state.matchedLocation == AppRoutes.login;
-      
+
       if (!loggedIn && !loggingIn) return AppRoutes.login;
       if (loggedIn && loggingIn) return AppRoutes.home;
       return null;
