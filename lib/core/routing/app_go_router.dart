@@ -14,6 +14,7 @@ import '../../features/schedule/presentation/pages/schedule_page.dart';
 import '../../features/notes/presentation/pages/notes_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/profile/presentation/pages/personal_info_page.dart';
+import '../../features/profile/presentation/pages/profile_selector_page.dart';
 import '../../features/documents/presentation/pages/documents_page.dart';
 import '../../features/documents/presentation/pages/document_detail_page.dart';
 
@@ -65,6 +66,10 @@ class AppGoRouter {
       GoRoute(
         path: AppRoutes.personalInfo,
         builder: (context, state) => const PersonalInfoPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.profileSelector,
+        builder: (context, state) => const ProfileSelectorPage(),
       ),
       GoRoute(
         path: AppRoutes.notifications,
