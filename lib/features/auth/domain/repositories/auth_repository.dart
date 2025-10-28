@@ -5,4 +5,5 @@ abstract class AuthRepository {
   Future<UserEntity?> signUp(String email, String password);
   Future<void> signOut();
   Stream<UserEntity?> get user;
+  UserEntity? getCurrentUser();
 }

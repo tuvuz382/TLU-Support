@@ -1,7 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '/core/presentation/theme/app_colors.dart';
+import '../../domain/repositories/auth_repository.dart';
+import '../../data/repositories/auth_repository_impl.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,9 +14,16 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  late final AuthRepository _authRepository;
   bool _obscurePassword = true;
   bool _isLoading = false;
   String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _authRepository = AuthRepositoryImpl();
+  }
 
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
@@ -26,39 +34,39 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
+      await _authRepository.signIn(
+        _emailController.text.trim(),
+        _passwordController.text,
       );
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        _errorMessage = _getErrorMessage(e.code);
-      });
+      // Navigation sẽ được xử lý tự động bởi GoRouter khi auth state thay đổi
     } catch (e) {
-      setState(() {
-        _errorMessage = 'Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.';
-      });
+      String errorMessage = 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.';
+      
+      // Xử lý một số lỗi phổ biến dựa trên message
+      final errorString = e.toString().toLowerCase();
+      if (errorString.contains('user-not-found') || errorString.contains('không tìm thấy')) {
+        errorMessage = 'Không tìm thấy tài khoản với email này.';
+      } else if (errorString.contains('wrong-password') || errorString.contains('mật khẩu')) {
+        errorMessage = 'Mật khẩu không đúng.';
+      } else if (errorString.contains('invalid-email') || errorString.contains('email')) {
+        errorMessage = 'Email không hợp lệ.';
+      } else if (errorString.contains('user-disabled')) {
+        errorMessage = 'Tài khoản này đã bị vô hiệu hóa.';
+      } else if (errorString.contains('too-many-requests')) {
+        errorMessage = 'Quá nhiều lần thử đăng nhập. Vui lòng thử lại sau.';
+      }
+      
+      if (mounted) {
+        setState(() {
+          _errorMessage = errorMessage;
+        });
+      }
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  String _getErrorMessage(String errorCode) {
-    switch (errorCode) {
-      case 'user-not-found':
-        return 'Không tìm thấy tài khoản với email này.';
-      case 'wrong-password':
-        return 'Mật khẩu không đúng.';
-      case 'invalid-email':
-        return 'Email không hợp lệ.';
-      case 'user-disabled':
-        return 'Tài khoản này đã bị vô hiệu hóa.';
-      case 'too-many-requests':
-        return 'Quá nhiều lần thử đăng nhập. Vui lòng thử lại sau.';
-      default:
-        return 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.';
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
