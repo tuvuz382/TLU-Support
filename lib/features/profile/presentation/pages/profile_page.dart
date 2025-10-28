@@ -6,6 +6,9 @@ import '/features/data_generator/domain/entities/sinh_vien_entity.dart';
 import '../../domain/repositories/student_profile_repository.dart';
 import '../../data/repositories/student_profile_repository_impl.dart';
 import '../../data/datasources/student_profile_remote_datasource.dart';
+import '/features/auth/domain/repositories/auth_repository.dart';
+import '/features/auth/data/repositories/auth_repository_impl.dart';
+import '/features/auth/domain/entities/user_entity.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -16,6 +19,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   late final StudentProfileRepository _studentRepository;
+  late final AuthRepository _authRepository;
   SinhVienEntity? _studentProfile;
   bool _isLoading = true;
 
@@ -25,6 +29,7 @@ class _ProfilePageState extends State<ProfilePage> {
     // Dependency Injection setup
     final dataSource = StudentProfileRemoteDataSource();
     _studentRepository = StudentProfileRepositoryImpl(remoteDataSource: dataSource);
+    _authRepository = AuthRepositoryImpl();
     _loadStudentProfile();
   }
 
@@ -269,7 +274,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildNoProfileView(User? user) {
+  Widget _buildNoProfileView(UserEntity? user) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
