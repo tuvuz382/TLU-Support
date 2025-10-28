@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '/core/presentation/theme/app_colors.dart';
@@ -55,10 +54,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _signOut(BuildContext context) async {
     try {
-      await FirebaseAuth.instance.signOut();
-      if (context.mounted) {
-        context.go('/login_page');
-      }
+      await _authRepository.signOut();
+      // Navigation sẽ được xử lý tự động bởi GoRouter khi auth state thay đổi
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -191,7 +188,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = _authRepository.getCurrentUser();
     
     return Scaffold(
       appBar: AppBar(

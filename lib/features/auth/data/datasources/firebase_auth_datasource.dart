@@ -4,7 +4,8 @@ import '../../domain/entities/user_entity.dart';
 class FirebaseAuthDataSource {
   final FirebaseAuth _firebaseAuth;
 
-  FirebaseAuthDataSource(this._firebaseAuth);
+  FirebaseAuthDataSource([FirebaseAuth? firebaseAuth])
+      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   Future<UserEntity?> signIn(String email, String password) async {
     final cred = await _firebaseAuth.signInWithEmailAndPassword(
@@ -26,6 +27,11 @@ class FirebaseAuthDataSource {
 
   Stream<UserEntity?> get user =>
       _firebaseAuth.authStateChanges().map(_userFromFirebase);
+
+  UserEntity? getCurrentUser() {
+    final currentUser = _firebaseAuth.currentUser;
+    return _userFromFirebase(currentUser);
+  }
 
   UserEntity? _userFromFirebase(User? user) {
     if (user == null) return null;
