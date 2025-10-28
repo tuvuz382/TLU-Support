@@ -1,10 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'go_router_refresh_change.dart';
 import 'app_routes.dart';
 
 // Features - Auth
 import '../../features/auth/presentation/pages/login_page.dart';
+import '../../features/auth/domain/repositories/auth_repository.dart';
+import '../../features/auth/data/repositories/auth_repository_impl.dart';
 
 // Features - Home
 import '../../features/home/presentation/pages/home_page.dart';
@@ -31,6 +32,8 @@ import '../../features/scholarship/presentation/pages/registered_scholarships_pa
 import '../../core/presentation/layouts/main_layout.dart';
 
 class AppGoRouter {
+  static final AuthRepository _authRepository = AuthRepositoryImpl();
+  
   static final GoRouter router = GoRouter(
     initialLocation: AppRoutes.login,
     debugLogDiagnostics: true,
@@ -107,7 +110,7 @@ class AppGoRouter {
       ),
     ],
     redirect: (context, state) {
-      final user = FirebaseAuth.instance.currentUser;
+      final user = _authRepository.getCurrentUser();
       final loggedIn = user != null;
       final loggingIn = state.matchedLocation == AppRoutes.login;
 
@@ -116,7 +119,7 @@ class AppGoRouter {
       return null;
     },
     refreshListenable: GoRouterRefreshStream(
-      FirebaseAuth.instance.authStateChanges(),
+      _authRepository.user.map((user) => user != null),
     ),
   );
 

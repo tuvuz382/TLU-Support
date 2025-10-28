@@ -5,7 +5,8 @@ import '/features/data_generator/domain/entities/sinh_vien_entity.dart';
 import '../../domain/repositories/student_profile_repository.dart';
 import '../../data/repositories/student_profile_repository_impl.dart';
 import '../../data/datasources/student_profile_remote_datasource.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import '/features/auth/domain/repositories/auth_repository.dart';
+import '/features/auth/data/repositories/auth_repository_impl.dart';
 
 class PersonalInfoPage extends StatefulWidget {
   const PersonalInfoPage({super.key});
@@ -23,6 +24,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   final _majorController = TextEditingController();
   
   late final StudentProfileRepository _studentRepository;
+  late final AuthRepository _authRepository;
   SinhVienEntity? _studentProfile;
   bool _isLoading = true;
   DateTime? _selectedDate;
@@ -33,6 +35,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     // Dependency Injection setup
     final dataSource = StudentProfileRemoteDataSource();
     _studentRepository = StudentProfileRepositoryImpl(remoteDataSource: dataSource);
+    _authRepository = AuthRepositoryImpl();
     _loadStudentProfile();
   }
 
@@ -59,7 +62,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
           _populateFields(profile);
         } else {
           // Nếu chưa có profile, tạo với thông tin cơ bản từ auth
-          final user = FirebaseAuth.instance.currentUser;
+          final user = _authRepository.getCurrentUser();
           if (user?.email != null) {
             _emailController.text = user!.email!;
           }
@@ -100,8 +103,9 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         builder: (context) => const Center(child: CircularProgressIndicator()),
       );
 
-      final user = FirebaseAuth.instance.currentUser;
-      if (user?.email == null) {
+      final user = _authRepository.getCurrentUser();
+      final userEmail = user?.email;
+      if (userEmail == null) {
         throw Exception('Người dùng chưa đăng nhập');
       }
 
@@ -111,7 +115,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
             ? (_studentProfile?.maSV ?? _generateStudentId())
             : _studentIdController.text.trim(),
         hoTen: _fullNameController.text.trim(),
-        email: user!.email!,
+        email: userEmail,
         matKhau: _studentProfile?.matKhau ?? '', // Giữ nguyên hoặc để trống
         ngaySinh: _selectedDate ?? DateTime.now().subtract(const Duration(days: 365 * 20)),
         lop: _classController.text.trim(),
