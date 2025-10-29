@@ -112,11 +112,11 @@ class AppGoRouter {
             path: AppRoutes.scholarshipDetail,
             builder: (context, state) {
               final extra = state.extra as Map<String, dynamic>?;
+              final scholarshipId = extra?['scholarshipId'] as String?;
               final scholarshipTitle = extra?['scholarshipTitle'] as String?;
               return ScholarshipDetailPage(
-                scholarshipTitle:
-                    scholarshipTitle ??
-                    'Học bổng khuyến khích học tập theo Quy định của Bộ GD&ĐT',
+                scholarshipId: scholarshipId,
+                scholarshipTitle: scholarshipTitle,
               );
             },
           ),
