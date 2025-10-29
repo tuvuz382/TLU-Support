@@ -37,18 +37,47 @@ class ScholarshipEntity extends Equatable {
   }
 
   /// Tạo entity từ Firestore data
+  /// Hỗ trợ cả format cũ (thoiHanDangKy) và format mới (thoiHanDangKyBatDau, thoiHanDangKyKetThuc)
   factory ScholarshipEntity.fromFirestore(Map<String, dynamic> data) {
+    DateTime thoiHanDangKyBatDau;
+    DateTime thoiHanDangKyKetThuc;
+
+    // Nếu có format mới (thoiHanDangKyBatDau và thoiHanDangKyKetThuc)
+    if (data['thoiHanDangKyBatDau'] != null &&
+        data['thoiHanDangKyKetThuc'] != null) {
+      thoiHanDangKyBatDau = DateTime.parse(data['thoiHanDangKyBatDau']);
+      thoiHanDangKyKetThuc = DateTime.parse(data['thoiHanDangKyKetThuc']);
+    }
+    // Nếu có format cũ (thoiHanDangKy) - tạo khoảng thời gian hợp lý
+    else if (data['thoiHanDangKy'] != null) {
+      final thoiHanDangKyCu = DateTime.parse(data['thoiHanDangKy']);
+      final now = DateTime.now();
+      
+      // Nếu thời hạn cũ đã qua, tạo khoảng đăng ký mới từ hôm nay
+      if (thoiHanDangKyCu.isBefore(now)) {
+        thoiHanDangKyBatDau = now;
+        thoiHanDangKyKetThuc = now.add(const Duration(days: 60)); // Mở đăng ký trong 60 ngày
+      } else {
+        // Nếu thời hạn cũ chưa đến, tạo khoảng 30 ngày trước đó
+        final baseStart = thoiHanDangKyCu.subtract(const Duration(days: 30));
+        thoiHanDangKyBatDau = baseStart.isBefore(now) ? now : baseStart;
+        thoiHanDangKyKetThuc = thoiHanDangKyCu;
+      }
+    }
+    // Fallback nếu không có dữ liệu nào
+    else {
+      final now = DateTime.now();
+      thoiHanDangKyBatDau = now;
+      thoiHanDangKyKetThuc = now.add(const Duration(days: 30));
+    }
+
     return ScholarshipEntity(
       maHB: data['maHB'] ?? '',
       tenHB: data['tenHB'] ?? '',
       moTa: data['moTa'] ?? '',
       giaTri: (data['giaTri'] ?? 0.0).toDouble(),
-      thoiHanDangKyBatDau: DateTime.parse(
-        data['thoiHanDangKyBatDau'] ?? DateTime.now().toIso8601String(),
-      ),
-      thoiHanDangKyKetThuc: DateTime.parse(
-        data['thoiHanDangKyKetThuc'] ?? DateTime.now().toIso8601String(),
-      ),
+      thoiHanDangKyBatDau: thoiHanDangKyBatDau,
+      thoiHanDangKyKetThuc: thoiHanDangKyKetThuc,
       tepDinhKem: data['tepDinhKem'],
       ngayTao: data['ngayTao'] != null
           ? DateTime.parse(data['ngayTao'])

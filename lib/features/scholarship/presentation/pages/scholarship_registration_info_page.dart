@@ -190,54 +190,34 @@ class ScholarshipRegistrationInfoPage extends StatelessWidget {
             ),
             const SizedBox(height: 30),
             
-            // Action Buttons
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => context.go(AppRoutes.scholarshipList),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: AppColors.primary),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                    child: const Text(
-                      'Xem học bổng khác',
-                      style: TextStyle(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+            // Action Button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Xác nhận - quay lại trang học bổng
+                  context.go(AppRoutes.scholarshipList);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                child: const Text(
+                  'Xác nhận',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => context.go(AppRoutes.registeredScholarships),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                    child: const Text(
-                      'Xem đã đăng ký',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(context),
     );
   }
 
@@ -269,116 +249,6 @@ class ScholarshipRegistrationInfoPage extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildBottomNavigationBar(BuildContext context) {
-    final currentLocation = GoRouter.of(context).routerDelegate.currentConfiguration.uri.toString();
-    
-    return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.primary,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 4,
-            offset: Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(
-                icon: Icons.home,
-                label: 'Trang chủ',
-                index: 0,
-                currentLocation: currentLocation,
-                onTap: () => context.go(AppRoutes.home),
-              ),
-              _buildNavItem(
-                icon: Icons.calendar_today,
-                label: 'Lịch học',
-                index: 1,
-                currentLocation: currentLocation,
-                onTap: () => context.go(AppRoutes.schedule),
-              ),
-              _buildNavItem(
-                icon: Icons.note,
-                label: 'Ghi chú',
-                index: 2,
-                currentLocation: currentLocation,
-                onTap: () => context.go(AppRoutes.notes),
-              ),
-              _buildNavItem(
-                icon: Icons.person,
-                label: 'Trang cá nhân',
-                index: 3,
-                currentLocation: currentLocation,
-                onTap: () => context.go(AppRoutes.profile),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem({
-    required IconData icon,
-    required String label,
-    required int index,
-    required String currentLocation,
-    required VoidCallback onTap,
-  }) {
-    // Determine if this item is selected based on route
-    bool isSelected = false;
-    switch (index) {
-      case 0:
-        isSelected = currentLocation == AppRoutes.home;
-        break;
-      case 1:
-        isSelected = currentLocation == AppRoutes.schedule;
-        break;
-      case 2:
-        isSelected = currentLocation == AppRoutes.notes;
-        break;
-      case 3:
-        isSelected = currentLocation == AppRoutes.profile;
-        break;
-    }
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.white.withValues(alpha: 0.2) : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 24,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
