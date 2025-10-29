@@ -9,6 +9,9 @@ import '../../../profile/domain/usecases/get_current_student_profile_usecase.dar
 import '../../domain/repositories/gpa_repository.dart';
 import '../../data/repositories/gpa_repository_impl.dart';
 import '../../data/datasources/firebase_gpa_datasource.dart';
+import '../../domain/usecases/calculate_gpa_usecase.dart';
+import '../../domain/usecases/calculate_gpa_summary_usecase.dart';
+import '../../domain/entities/gpa_summary_entity.dart';
 
 class GPAPage extends StatefulWidget {
   const GPAPage({super.key});
@@ -21,6 +24,8 @@ class _GPAPageState extends State<GPAPage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late GPARepository _repository;
   late GetCurrentStudentProfileUseCase _getProfileUseCase;
+  late CalculateGPAUseCase _calculateGPAUseCase;
+  late CalculateGPASummaryUseCase _calculateGPASummaryUseCase;
 
   SinhVienEntity? _currentStudent;
   List<BangDiemEntity> _allGrades = [];
@@ -45,6 +50,12 @@ class _GPAPageState extends State<GPAPage> with SingleTickerProviderStateMixin {
     final profileRepository =
         StudentProfileRepositoryImpl(remoteDataSource: profileDataSource);
     _getProfileUseCase = GetCurrentStudentProfileUseCase(profileRepository);
+    
+    // Initialize Use Cases
+    _calculateGPAUseCase = CalculateGPAUseCase();
+    _calculateGPASummaryUseCase = CalculateGPASummaryUseCase(
+      calculateGPAUseCase: _calculateGPAUseCase,
+    );
 
     _loadData();
   }
@@ -123,102 +134,13 @@ class _GPAPageState extends State<GPAPage> with SingleTickerProviderStateMixin {
     return filtered;
   }
 
-  Map<String, dynamic> _calculateGPA(List<BangDiemEntity> grades) {
-    if (grades.isEmpty) {
-      return {
-        'gpaHe10': 0.0,
-        'gpaHe4': 0.0,
-        'tongTinChi': 0,
-      };
-    }
 
-    double totalDiemHe10 = 0.0;
-    double totalDiemHe4 = 0.0;
-    int totalTinChi = 0;
-
-    for (final grade in grades) {
-      // Lấy số tín chỉ của môn học
-      final subject = _subjects.firstWhere(
-        (s) => s.maMon == grade.maMon,
-        orElse: () => MonHocEntity(
-          maMon: grade.maMon,
-          maGV: '',
-          tenMon: 'Không xác định',
-          soTinChi: 3,
-          moTa: '',
-        ),
-      );
-
-      final tinChi = subject.soTinChi;
-      totalTinChi += tinChi;
-      totalDiemHe10 += grade.diem * tinChi;
-      totalDiemHe4 += grade.diemHe4 * tinChi;
-    }
-
-    return {
-      'gpaHe10': totalTinChi > 0 ? totalDiemHe10 / totalTinChi : 0.0,
-      'gpaHe4': totalTinChi > 0 ? totalDiemHe4 / totalTinChi : 0.0,
-      'tongTinChi': totalTinChi,
-    };
-  }
-
-  List<Map<String, dynamic>> _calculateGPASummary() {
-    final summary = <Map<String, dynamic>>[];
-
-    // Group by năm học
-    final byYear = <int, List<BangDiemEntity>>{};
-    for (final grade in _allGrades) {
-      byYear.putIfAbsent(grade.namHoc, () => []).add(grade);
-    }
-
-    for (final entry in byYear.entries.toList()..sort((a, b) => a.key.compareTo(b.key))) {
-      final namHoc = entry.key;
-      final grades = entry.value;
-
-      // Group by học kỳ
-      final bySemester = <String, List<BangDiemEntity>>{};
-      for (final grade in grades) {
-        bySemester.putIfAbsent(grade.hocky, () => []).add(grade);
-      }
-
-      // Tính cho từng học kỳ
-      for (final semesterEntry in bySemester.entries.toList()
-        ..sort((a, b) => a.key.compareTo(b.key))) {
-        final hocky = semesterEntry.key;
-        final semesterGrades = semesterEntry.value;
-        final gpa = _calculateGPA(semesterGrades);
-
-        summary.add({
-          'namHoc': '$namHoc-${namHoc + 1}',
-          'hocKy': hocky,
-          'gpaHe10': gpa['gpaHe10'],
-          'gpaHe4': gpa['gpaHe4'],
-          'tongTinChi': gpa['tongTinChi'],
-        });
-      }
-
-      // Tính cho cả năm
-      final yearGPA = _calculateGPA(grades);
-      summary.add({
-        'namHoc': '$namHoc-${namHoc + 1}',
-        'hocKy': 'Cả năm',
-        'gpaHe10': yearGPA['gpaHe10'],
-        'gpaHe4': yearGPA['gpaHe4'],
-        'tongTinChi': yearGPA['tongTinChi'],
-      });
-    }
-
-    // Tính tổng toàn khóa
-    final overallGPA = _calculateGPA(_allGrades);
-    summary.add({
-      'namHoc': 'Toàn khóa',
-      'hocKy': 'Toàn khóa',
-      'gpaHe10': overallGPA['gpaHe10'],
-      'gpaHe4': overallGPA['gpaHe4'],
-      'tongTinChi': overallGPA['tongTinChi'],
-    });
-
-    return summary;
+  /// Tính tổng hợp GPA sử dụng Use Case
+  List<GPASummaryEntity> _calculateGPASummary() {
+    return _calculateGPASummaryUseCase(
+      allGrades: _allGrades,
+      subjects: _subjects,
+    );
   }
 
   String _getSubjectName(String maMon) {
@@ -480,7 +402,7 @@ class _GPAPageState extends State<GPAPage> with SingleTickerProviderStateMixin {
   }
 
   // Bảng điểm tổng hợp đơn giản
-  Widget _buildSimpleGPASummary(List<Map<String, dynamic>> summary) {
+  Widget _buildSimpleGPASummary(List<GPASummaryEntity> summary) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final screenWidth = constraints.maxWidth;
@@ -529,17 +451,17 @@ class _GPAPageState extends State<GPAPage> with SingleTickerProviderStateMixin {
                       ),
                       child: Row(
                         children: [
-                          _buildSimpleTableCell(item['namHoc'].toString(), namHocWidth),
-                          _buildSimpleTableCell(item['hocKy'].toString(), hocKyWidth),
+                          _buildSimpleTableCell(item.namHoc, namHocWidth),
+                          _buildSimpleTableCell(item.hocKy, hocKyWidth),
                           _buildSimpleTableCell(
-                            (item['gpaHe10'] as double).toStringAsFixed(1),
+                            item.gpaResult.gpaHe10.toStringAsFixed(1),
                             gpaWidth,
                           ),
                           _buildSimpleTableCell(
-                            (item['gpaHe4'] as double).toStringAsFixed(1),
+                            item.gpaResult.gpaHe4.toStringAsFixed(1),
                             gpaWidth,
                           ),
-                          _buildSimpleTableCell(item['tongTinChi'].toString(), tinChiWidth),
+                          _buildSimpleTableCell(item.gpaResult.tongTinChi.toString(), tinChiWidth),
                         ],
                       ),
                     );

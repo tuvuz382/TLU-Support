@@ -2,13 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/presentation/theme/app_colors.dart';
 import '../../../../core/routing/app_routes.dart';
+import '../../../profile/data/repositories/student_profile_repository_impl.dart';
+import '../../../profile/data/datasources/student_profile_remote_datasource.dart';
+import '../../../profile/domain/usecases/get_current_student_profile_usecase.dart';
+import '../../../data_generator/domain/entities/sinh_vien_entity.dart';
 
 class ScholarshipRegistrationPage extends StatefulWidget {
-  final String scholarshipTitle;
+  final String? scholarshipId;
+  final String? scholarshipTitle; // For backwards compatibility
   
   const ScholarshipRegistrationPage({
     super.key,
-    required this.scholarshipTitle,
+    this.scholarshipId,
+    this.scholarshipTitle,
   });
 
   @override
@@ -24,8 +30,20 @@ class _ScholarshipRegistrationPageState extends State<ScholarshipRegistrationPag
   final _majorController = TextEditingController();
   final _gpaController = TextEditingController();
   
+  late final GetCurrentStudentProfileUseCase _getProfileUseCase;
   DateTime? _selectedDate;
-  bool _isLoading = false;
+  bool _isLoading = true;
+  bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Dependency Injection setup
+    final dataSource = StudentProfileRemoteDataSource();
+    final repository = StudentProfileRepositoryImpl(remoteDataSource: dataSource);
+    _getProfileUseCase = GetCurrentStudentProfileUseCase(repository);
+    _loadStudentProfile();
+  }
 
   @override
   void dispose() {
@@ -38,8 +56,68 @@ class _ScholarshipRegistrationPageState extends State<ScholarshipRegistrationPag
     super.dispose();
   }
 
+  Future<void> _loadStudentProfile() async {
+    try {
+      final profile = await _getProfileUseCase();
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        
+        if (profile != null) {
+          _populateFields(profile);
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi khi tải thông tin sinh viên: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
+  }
+
+  void _populateFields(SinhVienEntity student) {
+    _studentIdController.text = student.maSV;
+    _fullNameController.text = student.hoTen;
+    _emailController.text = student.email;
+    _classController.text = student.lop;
+    _majorController.text = student.nganhHoc;
+    _gpaController.text = student.diemGPA.toStringAsFixed(2);
+    _selectedDate = student.ngaySinh;
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: const Color(0xFFF8F9FA),
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          title: const Text(
+            'Học bổng',
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
@@ -105,6 +183,7 @@ class _ScholarshipRegistrationPageState extends State<ScholarshipRegistrationPag
                 _buildTextField(
                   label: 'Mã sinh viên',
                   controller: _studentIdController,
+                  enabled: true, // Cho phép chỉnh sửa
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Vui lòng nhập mã sinh viên';
@@ -197,7 +276,7 @@ class _ScholarshipRegistrationPageState extends State<ScholarshipRegistrationPag
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: _isLoading ? null : _handleRegistration,
+                    onPressed: _isSubmitting ? null : _handleRegistration,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
@@ -205,7 +284,7 @@ class _ScholarshipRegistrationPageState extends State<ScholarshipRegistrationPag
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: _isLoading
+                    child: _isSubmitting
                         ? const SizedBox(
                             height: 20,
                             width: 20,
@@ -228,7 +307,6 @@ class _ScholarshipRegistrationPageState extends State<ScholarshipRegistrationPag
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(context),
     );
   }
 
@@ -237,6 +315,7 @@ class _ScholarshipRegistrationPageState extends State<ScholarshipRegistrationPag
     required TextEditingController controller,
     TextInputType? keyboardType,
     String? Function(String?)? validator,
+    bool enabled = true,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -254,6 +333,7 @@ class _ScholarshipRegistrationPageState extends State<ScholarshipRegistrationPag
           controller: controller,
           keyboardType: keyboardType,
           validator: validator,
+          enabled: enabled,
           decoration: InputDecoration(
             hintText: 'Nhập $label',
             border: OutlineInputBorder(
@@ -312,44 +392,6 @@ class _ScholarshipRegistrationPageState extends State<ScholarshipRegistrationPag
     );
   }
 
-  Widget _buildBottomNavigationBar(BuildContext context) {
-    return Container(
-      height: 60,
-      decoration: const BoxDecoration(
-        color: AppColors.primary,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(Icons.home, 'Trang chủ', () => context.go(AppRoutes.home)),
-          _buildNavItem(Icons.calendar_today, 'Lịch', () {}),
-          _buildNavItem(Icons.description, 'Tài liệu', () {}),
-          _buildNavItem(Icons.person, 'Cá nhân', () {}),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: Colors.white, size: 24),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -380,28 +422,44 @@ class _ScholarshipRegistrationPageState extends State<ScholarshipRegistrationPag
     }
 
     setState(() {
-      _isLoading = true;
+      _isSubmitting = true;
     });
 
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      // TODO: Gọi API đăng ký học bổng thực tế
+      // Hiện tại chỉ simulate
+      await Future.delayed(const Duration(seconds: 2));
 
-    setState(() {
-      _isLoading = false;
-    });
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
 
-    // Navigate to registration info page
-    if (mounted) {
-      context.go(AppRoutes.scholarshipRegistrationInfo, extra: {
-        'scholarshipTitle': widget.scholarshipTitle,
-        'studentId': _studentIdController.text,
-        'fullName': _fullNameController.text,
-        'email': _emailController.text,
-        'dateOfBirth': _selectedDate!,
-        'class': _classController.text,
-        'major': _majorController.text,
-        'gpa': _gpaController.text,
-      });
+        // Navigate to registration info page
+        context.go(AppRoutes.scholarshipRegistrationInfo, extra: {
+          'scholarshipId': widget.scholarshipId,
+          'scholarshipTitle': widget.scholarshipTitle ?? 'Học bổng',
+          'studentId': _studentIdController.text,
+          'fullName': _fullNameController.text,
+          'email': _emailController.text,
+          'dateOfBirth': _selectedDate!,
+          'class': _classController.text,
+          'major': _majorController.text,
+          'gpa': _gpaController.text,
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi khi đăng ký: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
     }
   }
 }

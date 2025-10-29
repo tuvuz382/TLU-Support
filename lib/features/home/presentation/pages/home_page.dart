@@ -153,7 +153,7 @@ class HomePage extends StatelessWidget {
                       context,
                       icon: Icons.people,
                       label: 'Đội ngũ giảng viên',
-                      onTap: () {},
+                      onTap: () => context.go('/teacher-list'),
                     ),
                     _buildGridItem(
                       context,

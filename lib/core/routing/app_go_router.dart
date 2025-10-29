@@ -22,6 +22,8 @@ import '../../features/documents/presentation/pages/document_detail_page.dart';
 // Features - Notifications
 import '../../features/notifications/presentation/pages/notifications_page.dart';
 import '../../features/notifications/presentation/pages/notification_detail_page.dart';
+// Import NotificationItem from notifications_page for routing
+// Note: NotificationItem is defined in notifications_page.dart
 
 // Features - Scholarship
 import '../../features/scholarship/presentation/pages/scholarship_list_page.dart';
@@ -36,6 +38,10 @@ import '../../features/support_request/presentation/pages/support_request_detail
 
 // Features - GPA
 import '../../features/gpa/presentation/pages/gpa_page.dart';
+
+// Features - Teacher
+import '../../features/teacher/presentation/pages/teacher_list_page.dart';
+import '../../features/teacher/presentation/pages/teacher_detail_page.dart';
 
 // Layout
 import '../../core/presentation/layouts/main_layout.dart';
@@ -111,11 +117,11 @@ class AppGoRouter {
             path: AppRoutes.scholarshipDetail,
             builder: (context, state) {
               final extra = state.extra as Map<String, dynamic>?;
+              final scholarshipId = extra?['scholarshipId'] as String?;
               final scholarshipTitle = extra?['scholarshipTitle'] as String?;
               return ScholarshipDetailPage(
-                scholarshipTitle:
-                    scholarshipTitle ??
-                    'Học bổng khuyến khích học tập theo Quy định của Bộ GD&ĐT',
+                scholarshipId: scholarshipId,
+                scholarshipTitle: scholarshipTitle,
               );
             },
           ),
@@ -123,9 +129,10 @@ class AppGoRouter {
             path: AppRoutes.scholarshipRegistration,
             builder: (context, state) {
               final extra = state.extra as Map<String, dynamic>?;
-              final scholarshipTitle =
-                  extra?['scholarshipTitle'] as String? ?? 'Học bổng';
+              final scholarshipId = extra?['scholarshipId'] as String?;
+              final scholarshipTitle = extra?['scholarshipTitle'] as String?;
               return ScholarshipRegistrationPage(
+                scholarshipId: scholarshipId,
                 scholarshipTitle: scholarshipTitle,
               );
             },
@@ -164,6 +171,17 @@ class AppGoRouter {
           GoRoute(
             path: AppRoutes.gpa,
             builder: (context, state) => const GPAPage(),
+          ),
+          GoRoute(
+            path: AppRoutes.teacherList,
+            builder: (context, state) => const TeacherListPage(),
+          ),
+          GoRoute(
+            path: AppRoutes.teacherDetail,
+            builder: (context, state) {
+              final teacher = state.extra;
+              return TeacherDetailPage(teacher: teacher as dynamic);
+            },
           ),
         ],
       ),

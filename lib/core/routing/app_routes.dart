@@ -18,4 +18,6 @@ class AppRoutes {
   static const String supportRequestDetail = '/support-request-detail';
   static const String profileSelector = '/profile-selector';
   static const String gpa = '/gpa';
+  static const String teacherList = '/teacher-list';
+  static const String teacherDetail = '/teacher-detail';
 }
