@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '/core/presentation/theme/app_colors.dart';
+import '/core/routing/app_routes.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -133,8 +134,8 @@ class HomePage extends StatelessWidget {
                     _buildGridItem(
                       context,
                       icon: Icons.school,
-                      label: 'Tính GPA',
-                      onTap: () {},
+                      label: 'Tra cứu GPA',
+                      onTap: () => context.push(AppRoutes.gpa),
                     ),
                     _buildGridItem(
                       context,

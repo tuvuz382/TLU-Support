@@ -5,7 +5,6 @@ import '../../../data_generator/domain/entities/giang_vien_entity.dart';
 import '../../data/datasources/firebase_teacher_datasource.dart';
 import '../../data/repositories/teacher_repository_impl.dart';
 import '../../domain/repositories/teacher_repository.dart';
-import 'teacher_detail_page.dart';
 
 class TeacherListPage extends StatefulWidget {
   const TeacherListPage({super.key});

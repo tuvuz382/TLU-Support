@@ -22,6 +22,8 @@ import '../../features/documents/presentation/pages/document_detail_page.dart';
 // Features - Notifications
 import '../../features/notifications/presentation/pages/notifications_page.dart';
 import '../../features/notifications/presentation/pages/notification_detail_page.dart';
+// Import NotificationItem from notifications_page for routing
+// Note: NotificationItem is defined in notifications_page.dart
 
 // Features - Scholarship
 import '../../features/scholarship/presentation/pages/scholarship_list_page.dart';
@@ -33,6 +35,9 @@ import '../../features/scholarship/presentation/pages/registered_scholarships_pa
 // Features - Support Request
 import '../../features/support_request/presentation/pages/support_request_page.dart';
 import '../../features/support_request/presentation/pages/support_request_detail_page.dart';
+
+// Features - GPA
+import '../../features/gpa/presentation/pages/gpa_page.dart';
 
 // Features - Teacher
 import '../../features/teacher/presentation/pages/teacher_list_page.dart';
@@ -162,6 +167,10 @@ class AppGoRouter {
               final request = state.extra;
               return SupportRequestDetailPage(request: request as dynamic);
             },
+          ),
+          GoRoute(
+            path: AppRoutes.gpa,
+            builder: (context, state) => const GPAPage(),
           ),
           GoRoute(
             path: AppRoutes.teacherList,
