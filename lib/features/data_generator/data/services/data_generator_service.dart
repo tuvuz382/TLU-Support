@@ -123,6 +123,18 @@ class DataGeneratorService {
         hocBongDangKy: ['HB001', 'HB003', 'HB005'],
         anhDaiDien: null,
       ),
+      SinhVienEntity(
+        maSV: 'ADMIN001',
+        hoTen: 'Quản trị hệ thống',
+        email: 'admin123@gmail.com',
+        matKhau: 'admin123',
+        ngaySinh: DateTime(1990, 1, 1),
+        lop: 'ADMIN',
+        nganhHoc: 'Quản trị hệ thống',
+        diemGPA: 4.0,
+        hocBongDangKy: ['HB001', 'HB002', 'HB003', 'HB004', 'HB005'],
+        anhDaiDien: null,
+      ),
     ];
 
     for (final sinhVien in sinhVienList) {

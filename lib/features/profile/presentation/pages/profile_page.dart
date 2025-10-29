@@ -1,18 +1,66 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '/core/presentation/theme/app_colors.dart';
 import '/features/data_generator/data/services/data_generator_service.dart';
+import '/features/data_generator/domain/entities/sinh_vien_entity.dart';
+import '../../domain/repositories/student_profile_repository.dart';
+import '../../data/repositories/student_profile_repository_impl.dart';
+import '../../data/datasources/student_profile_remote_datasource.dart';
+import '/features/auth/domain/repositories/auth_repository.dart';
+import '/features/auth/data/repositories/auth_repository_impl.dart';
+import '/features/auth/domain/entities/user_entity.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  late final StudentProfileRepository _studentRepository;
+  late final AuthRepository _authRepository;
+  SinhVienEntity? _studentProfile;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Dependency Injection setup
+    final dataSource = StudentProfileRemoteDataSource();
+    _studentRepository = StudentProfileRepositoryImpl(remoteDataSource: dataSource);
+    _authRepository = AuthRepositoryImpl();
+    _loadStudentProfile();
+  }
+
+  Future<void> _loadStudentProfile() async {
+    try {
+      final profile = await _studentRepository.getCurrentStudentProfile();
+      if (mounted) {
+        setState(() {
+          _studentProfile = profile;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi khi tải thông tin sinh viên: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
+  }
 
   Future<void> _signOut(BuildContext context) async {
     try {
-      await FirebaseAuth.instance.signOut();
-      if (context.mounted) {
-        context.go('/login_page');
-      }
+      await _authRepository.signOut();
+      // Navigation sẽ được xử lý tự động bởi GoRouter khi auth state thay đổi
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -145,7 +193,7 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = _authRepository.getCurrentUser();
     
     return Scaffold(
       appBar: AppBar(
@@ -158,51 +206,11 @@ class ProfilePage extends StatelessWidget {
         child: Column(
           children: [
             // Thông tin người dùng
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                    child: Icon(
-                      Icons.person,
-                      size: 40,
-                      color: AppColors.primary,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    user?.email ?? 'Người dùng',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Sinh viên TLU',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _isLoading 
+                ? const Center(child: CircularProgressIndicator())
+                : _studentProfile == null
+                    ? _buildNoProfileView(user)
+                    : _buildProfileView(),
             
             const SizedBox(height: 24),
             
@@ -214,6 +222,11 @@ class ProfilePage extends StatelessWidget {
                     icon: Icons.person,
                     title: 'Thông tin cá nhân',
                     onTap: () => context.go('/personal-info'),
+                  ),
+                  _buildMenuItem(
+                    icon: Icons.school,
+                    title: 'Chọn profile có sẵn',
+                    onTap: () => context.go('/profile-selector'),
                   ),
                   // Chỉ hiển thị các nút quản lý dữ liệu cho admin123@gmail.com
                   if (user?.email == 'admin123@gmail.com') ...[
@@ -260,6 +273,152 @@ class ProfilePage extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildNoProfileView(UserEntity? user) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 40,
+            backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+            child: Icon(
+              Icons.person,
+              size: 40,
+              color: AppColors.primary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            user?.email ?? 'Người dùng',
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.orange.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.orange, width: 1),
+            ),
+            child: const Text(
+              'Chưa có thông tin profile',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.orange,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: () => context.go('/profile-selector'),
+            icon: const Icon(Icons.school),
+            label: const Text('Chọn profile có sẵn'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileView() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 40,
+            backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+            backgroundImage: _studentProfile?.anhDaiDien != null
+                ? NetworkImage(_studentProfile!.anhDaiDien!)
+                : null,
+            child: _studentProfile?.anhDaiDien == null
+                ? Icon(
+                    Icons.person,
+                    size: 40,
+                    color: AppColors.primary,
+                  )
+                : null,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            _studentProfile?.hoTen ?? 'Người dùng',
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          if (_studentProfile?.maSV != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              _studentProfile!.maSV,
+              style: const TextStyle(
+                fontSize: 14,
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+          const SizedBox(height: 8),
+          Text(
+            _studentProfile?.lop != null && _studentProfile!.lop.isNotEmpty
+                ? 'Lớp ${_studentProfile!.lop}'
+                : 'Sinh viên TLU',
+            style: const TextStyle(
+              fontSize: 14,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          if (_studentProfile?.nganhHoc != null && 
+              _studentProfile!.nganhHoc.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              _studentProfile!.nganhHoc,
+              style: const TextStyle(
+                fontSize: 13,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
 
   Widget _buildMenuItem({
     required IconData icon,
