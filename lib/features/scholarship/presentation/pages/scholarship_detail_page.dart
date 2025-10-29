@@ -5,10 +5,11 @@ import '../../../../core/routing/app_routes.dart';
 
 class ScholarshipDetailPage extends StatelessWidget {
   final String scholarshipTitle;
-  
+
   const ScholarshipDetailPage({
     super.key,
-    this.scholarshipTitle = 'Học bổng khuyến khích học tập theo Quy định của Bộ GD&ĐT',
+    this.scholarshipTitle =
+        'Học bổng khuyến khích học tập theo Quy định của Bộ GD&ĐT',
   });
 
   @override
@@ -66,10 +67,7 @@ class ScholarshipDetailPage extends StatelessWidget {
               // Time
               const Text(
                 'Thời gian: 3:30PM 3/9/2025',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black87,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.black87),
               ),
               const SizedBox(height: 20),
               // Description
@@ -103,14 +101,14 @@ class ScholarshipDetailPage extends StatelessWidget {
               // Attachment
               const Text(
                 'Chi tiết xem tại file dưới đây:',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black87,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.black87),
               ),
               const SizedBox(height: 12),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
@@ -127,10 +125,7 @@ class ScholarshipDetailPage extends StatelessWidget {
                     const SizedBox(width: 8),
                     const Text(
                       'HBBGDOT.pdf',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.black87,
-                      ),
+                      style: TextStyle(fontSize: 14, color: Colors.black87),
                     ),
                   ],
                 ),
@@ -164,39 +159,13 @@ class ScholarshipDetailPage extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
-    );
-  }
-
-  Widget _buildBottomNavigationBar() {
-    return Container(
-      height: 60,
-      decoration: const BoxDecoration(
-        color: AppColors.primary,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(Icons.home, true),
-          _buildNavItem(Icons.grid_view, false),
-          _buildNavItem(Icons.description, false),
-          _buildNavItem(Icons.person, false),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, bool isSelected) {
-    return Icon(
-      icon,
-      color: Colors.white,
-      size: 24,
     );
   }
 
   void _navigateToRegistration(BuildContext context) {
-    context.go(AppRoutes.scholarshipRegistration, extra: {
-      'scholarshipTitle': scholarshipTitle,
-    });
+    context.go(
+      AppRoutes.scholarshipRegistration,
+      extra: {'scholarshipTitle': scholarshipTitle},
+    );
   }
 }

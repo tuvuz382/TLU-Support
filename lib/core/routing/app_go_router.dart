@@ -39,7 +39,7 @@ import '../../core/presentation/layouts/main_layout.dart';
 
 class AppGoRouter {
   static final AuthRepository _authRepository = AuthRepositoryImpl();
-  
+
   static final GoRouter router = GoRouter(
     initialLocation: AppRoutes.login,
     debugLogDiagnostics: true,
@@ -70,88 +70,95 @@ class AppGoRouter {
             path: AppRoutes.profile,
             builder: (context, state) => const ProfilePage(),
           ),
+          GoRoute(
+            path: AppRoutes.personalInfo,
+            builder: (context, state) => const PersonalInfoPage(),
+          ),
+          GoRoute(
+            path: AppRoutes.profileSelector,
+            builder: (context, state) => const ProfileSelectorPage(),
+          ),
+          GoRoute(
+            path: AppRoutes.notifications,
+            builder: (context, state) => const NotificationsPage(),
+          ),
+          GoRoute(
+            path: AppRoutes.documents,
+            builder: (context, state) => const DocumentsPage(),
+          ),
+          GoRoute(
+            path: AppRoutes.documentDetail,
+            builder: (context, state) {
+              final document = state.extra;
+              return DocumentDetailPage(document: document as dynamic);
+            },
+          ),
+          GoRoute(
+            path: AppRoutes.notificationDetail,
+            builder: (context, state) {
+              final notification = state.extra as NotificationItem?;
+              return NotificationDetailPage(notification: notification!);
+            },
+          ),
+          GoRoute(
+            path: AppRoutes.scholarshipList,
+            builder: (context, state) => const ScholarshipListPage(),
+          ),
+          GoRoute(
+            path: AppRoutes.scholarshipDetail,
+            builder: (context, state) {
+              final extra = state.extra as Map<String, dynamic>?;
+              final scholarshipTitle = extra?['scholarshipTitle'] as String?;
+              return ScholarshipDetailPage(
+                scholarshipTitle:
+                    scholarshipTitle ??
+                    'Học bổng khuyến khích học tập theo Quy định của Bộ GD&ĐT',
+              );
+            },
+          ),
+          GoRoute(
+            path: AppRoutes.scholarshipRegistration,
+            builder: (context, state) {
+              final extra = state.extra as Map<String, dynamic>?;
+              final scholarshipTitle =
+                  extra?['scholarshipTitle'] as String? ?? 'Học bổng';
+              return ScholarshipRegistrationPage(
+                scholarshipTitle: scholarshipTitle,
+              );
+            },
+          ),
+          GoRoute(
+            path: AppRoutes.scholarshipRegistrationInfo,
+            builder: (context, state) {
+              final extra = state.extra as Map<String, dynamic>;
+              return ScholarshipRegistrationInfoPage(
+                scholarshipTitle: extra['scholarshipTitle'] as String,
+                studentId: extra['studentId'] as String,
+                fullName: extra['fullName'] as String,
+                email: extra['email'] as String,
+                dateOfBirth: extra['dateOfBirth'] as DateTime,
+                classInfo: extra['class'] as String,
+                major: extra['major'] as String,
+                gpa: extra['gpa'] as String,
+              );
+            },
+          ),
+          GoRoute(
+            path: AppRoutes.registeredScholarships,
+            builder: (context, state) => const RegisteredScholarshipsPage(),
+          ),
+          GoRoute(
+            path: AppRoutes.supportRequest,
+            builder: (context, state) => const SupportRequestPage(),
+          ),
+          GoRoute(
+            path: AppRoutes.supportRequestDetail,
+            builder: (context, state) {
+              final request = state.extra;
+              return SupportRequestDetailPage(request: request as dynamic);
+            },
+          ),
         ],
-      ),
-      GoRoute(
-        path: AppRoutes.personalInfo,
-        builder: (context, state) => const PersonalInfoPage(),
-      ),
-      GoRoute(
-        path: AppRoutes.profileSelector,
-        builder: (context, state) => const ProfileSelectorPage(),
-      ),
-      GoRoute(
-        path: AppRoutes.notifications,
-        builder: (context, state) => const NotificationsPage(),
-      ),
-      GoRoute(
-        path: AppRoutes.documents,
-        builder: (context, state) => const DocumentsPage(),
-      ),
-      GoRoute(
-        path: AppRoutes.documentDetail,
-        builder: (context, state) {
-          final document = state.extra;
-          return DocumentDetailPage(document: document as dynamic);
-        },
-      ),
-      GoRoute(
-        path: AppRoutes.notificationDetail,
-        builder: (context, state) {
-          final notification = state.extra as NotificationItem?;
-          return NotificationDetailPage(notification: notification!);
-        },
-      ),
-      GoRoute(
-        path: AppRoutes.scholarshipList,
-        builder: (context, state) => const ScholarshipListPage(),
-      ),
-      GoRoute(
-        path: AppRoutes.scholarshipDetail,
-        builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>?;
-          final scholarshipTitle = extra?['scholarshipTitle'] as String?;
-          return ScholarshipDetailPage(scholarshipTitle: scholarshipTitle ?? 'Học bổng khuyến khích học tập theo Quy định của Bộ GD&ĐT');
-        },
-      ),
-      GoRoute(
-        path: AppRoutes.scholarshipRegistration,
-        builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>?;
-          final scholarshipTitle = extra?['scholarshipTitle'] as String? ?? 'Học bổng';
-          return ScholarshipRegistrationPage(scholarshipTitle: scholarshipTitle);
-        },
-      ),
-      GoRoute(
-        path: AppRoutes.scholarshipRegistrationInfo,
-        builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>;
-          return ScholarshipRegistrationInfoPage(
-            scholarshipTitle: extra['scholarshipTitle'] as String,
-            studentId: extra['studentId'] as String,
-            fullName: extra['fullName'] as String,
-            email: extra['email'] as String,
-            dateOfBirth: extra['dateOfBirth'] as DateTime,
-            classInfo: extra['class'] as String,
-            major: extra['major'] as String,
-            gpa: extra['gpa'] as String,
-          );
-        },
-      ),
-      GoRoute(
-        path: AppRoutes.registeredScholarships,
-        builder: (context, state) => const RegisteredScholarshipsPage(),
-      ),
-      GoRoute(
-        path: AppRoutes.supportRequest,
-        builder: (context, state) => const SupportRequestPage(),
-      ),
-      GoRoute(
-        path: AppRoutes.supportRequestDetail,
-        builder: (context, state) {
-          final request = state.extra;
-          return SupportRequestDetailPage(request: request as dynamic);
-        },
       ),
     ],
     redirect: (context, state) {
