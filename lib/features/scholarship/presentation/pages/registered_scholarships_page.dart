@@ -7,10 +7,12 @@ class RegisteredScholarshipsPage extends StatefulWidget {
   const RegisteredScholarshipsPage({super.key});
 
   @override
-  State<RegisteredScholarshipsPage> createState() => _RegisteredScholarshipsPageState();
+  State<RegisteredScholarshipsPage> createState() =>
+      _RegisteredScholarshipsPageState();
 }
 
-class _RegisteredScholarshipsPageState extends State<RegisteredScholarshipsPage> {
+class _RegisteredScholarshipsPageState
+    extends State<RegisteredScholarshipsPage> {
   int _selectedTab = 1; // Mặc định chọn tab "Đã đăng ký"
 
   @override
@@ -58,7 +60,9 @@ class _RegisteredScholarshipsPageState extends State<RegisteredScholarshipsPage>
                       decoration: BoxDecoration(
                         border: Border(
                           bottom: BorderSide(
-                            color: _selectedTab == 0 ? AppColors.primary : Colors.transparent,
+                            color: _selectedTab == 0
+                                ? AppColors.primary
+                                : Colors.transparent,
                             width: 2,
                           ),
                         ),
@@ -67,8 +71,12 @@ class _RegisteredScholarshipsPageState extends State<RegisteredScholarshipsPage>
                         'Danh sách',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: _selectedTab == 0 ? AppColors.primary : Colors.grey,
-                          fontWeight: _selectedTab == 0 ? FontWeight.bold : FontWeight.normal,
+                          color: _selectedTab == 0
+                              ? AppColors.primary
+                              : Colors.grey,
+                          fontWeight: _selectedTab == 0
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                         ),
                       ),
                     ),
@@ -82,7 +90,9 @@ class _RegisteredScholarshipsPageState extends State<RegisteredScholarshipsPage>
                       decoration: BoxDecoration(
                         border: Border(
                           bottom: BorderSide(
-                            color: _selectedTab == 1 ? AppColors.primary : Colors.transparent,
+                            color: _selectedTab == 1
+                                ? AppColors.primary
+                                : Colors.transparent,
                             width: 2,
                           ),
                         ),
@@ -91,8 +101,12 @@ class _RegisteredScholarshipsPageState extends State<RegisteredScholarshipsPage>
                         'Đã đăng ký',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: _selectedTab == 1 ? AppColors.primary : Colors.grey,
-                          fontWeight: _selectedTab == 1 ? FontWeight.bold : FontWeight.normal,
+                          color: _selectedTab == 1
+                              ? AppColors.primary
+                              : Colors.grey,
+                          fontWeight: _selectedTab == 1
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                         ),
                       ),
                     ),
@@ -103,11 +117,12 @@ class _RegisteredScholarshipsPageState extends State<RegisteredScholarshipsPage>
           ),
           // Content
           Expanded(
-            child: _selectedTab == 0 ? _buildScholarshipList() : _buildRegisteredList(),
+            child: _selectedTab == 0
+                ? _buildScholarshipList()
+                : _buildRegisteredList(),
           ),
         ],
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
 
@@ -160,37 +175,38 @@ class _RegisteredScholarshipsPageState extends State<RegisteredScholarshipsPage>
         color: AppColors.primary,
         borderRadius: BorderRadius.circular(12),
       ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 8),
-            Container(
-              width: double.infinity,
-              height: 1,
-              color: Colors.white.withOpacity(0.3),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              deadline,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            width: double.infinity,
+            height: 1,
+            color: Colors.white.withOpacity(0.3),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            deadline,
+            style: const TextStyle(color: Colors.white, fontSize: 14),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildRegisteredCard(String title, String submissionTime, String status) {
+  Widget _buildRegisteredCard(
+    String title,
+    String submissionTime,
+    String status,
+  ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -198,67 +214,35 @@ class _RegisteredScholarshipsPageState extends State<RegisteredScholarshipsPage>
         color: AppColors.primary,
         borderRadius: BorderRadius.circular(12),
       ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              width: double.infinity,
-              height: 1,
-              color: Colors.white.withOpacity(0.3),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              submissionTime,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              status,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
-    );
-  }
-
-  Widget _buildBottomNavigationBar() {
-    return Container(
-      height: 60,
-      decoration: const BoxDecoration(
-        color: AppColors.primary,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildNavItem(Icons.home, true),
-          _buildNavItem(Icons.grid_view, false),
-          _buildNavItem(Icons.description, false),
-          _buildNavItem(Icons.person, false),
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            width: double.infinity,
+            height: 1,
+            color: Colors.white.withOpacity(0.3),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            submissionTime,
+            style: const TextStyle(color: Colors.white, fontSize: 14),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            status,
+            style: const TextStyle(color: Colors.white, fontSize: 14),
+          ),
         ],
       ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, bool isSelected) {
-    return Icon(
-      icon,
-      color: Colors.white,
-      size: 24,
     );
   }
 }

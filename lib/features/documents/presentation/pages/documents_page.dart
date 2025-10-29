@@ -5,6 +5,8 @@ import '../../../data_generator/domain/entities/tai_lieu_entity.dart';
 import '../../data/datasources/firebase_documents_datasource.dart';
 import '../../data/repositories/documents_repository_impl.dart';
 import '../../domain/repositories/documents_repository.dart';
+import '../../domain/usecases/search_documents_usecase.dart';
+import '../widgets/filter_dialog.dart';
 
 class DocumentsPage extends StatefulWidget {
   const DocumentsPage({super.key});
@@ -17,23 +19,30 @@ class _DocumentsPageState extends State<DocumentsPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late DocumentsRepository _repository;
+  late SearchDocumentsUseCase _searchUseCase;
 
   List<TaiLieuEntity> _allDocuments = [];
   List<TaiLieuEntity> _favoriteDocuments = [];
+  List<TaiLieuEntity> _filteredDocuments = [];
   bool _isLoading = true;
   String? _errorMessage;
+  bool _isFiltered = false;
+  bool _isSearching = false;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _repository = DocumentsRepositoryImpl(FirebaseDocumentsDataSource());
+    _searchUseCase = SearchDocumentsUseCase(_repository);
     _loadDocuments();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -48,6 +57,7 @@ class _DocumentsPageState extends State<DocumentsPage>
       setState(() {
         _allDocuments = documents;
         _favoriteDocuments = documents.where((doc) => doc.yeuThich).toList();
+        _filteredDocuments = documents;
         _isLoading = false;
       });
     } catch (e) {
@@ -151,37 +161,62 @@ class _DocumentsPageState extends State<DocumentsPage>
           ),
         ),
 
-        // Document Count and Filter
+        // Search Bar
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.all(16),
           color: Colors.white,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
             children: [
-              Text(
-                '${_allDocuments.length} tài liệu',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black87,
+              // Search Input
+              TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Tìm kiếm tài liệu...',
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                          onPressed: _clearSearch,
+                          icon: const Icon(Icons.clear),
+                        )
+                      : null,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey[300]!),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.primary),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                 ),
+                onChanged: _performSearch,
+                textInputAction: TextInputAction.search,
               ),
+              const SizedBox(height: 12),
+
+              // Document Count and Filter
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.search, color: Colors.grey),
-                    onPressed: () {
-                      // TODO: Implement search
-                    },
+                  Text(
+                    _isFiltered || _isSearching
+                        ? '${_filteredDocuments.length}/${_allDocuments.length} tài liệu'
+                        : '${_allDocuments.length} tài liệu',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black87,
+                    ),
                   ),
                   IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.filter_list,
-                      color: AppColors.primary,
+                      color: _isFiltered ? AppColors.primary : Colors.grey,
                     ),
-                    onPressed: () {
-                      // TODO: Implement filter
-                    },
+                    onPressed: _showFilterDialog,
                   ),
                 ],
               ),
@@ -197,21 +232,9 @@ class _DocumentsPageState extends State<DocumentsPage>
             controller: _tabController,
             children: [
               // Tất cả
-              _allDocuments.isEmpty
-                  ? _buildEmptyState(
-                      icon: Icons.description_outlined,
-                      title: 'Chưa có tài liệu',
-                      subtitle: 'Chưa có tài liệu nào trong hệ thống',
-                    )
-                  : _buildDocumentList(_allDocuments),
+              _buildDocumentListForTab(0),
               // Yêu thích
-              _favoriteDocuments.isEmpty
-                  ? _buildEmptyState(
-                      icon: Icons.favorite_border,
-                      title: 'Chưa có tài liệu yêu thích',
-                      subtitle: 'Nhấn vào biểu tượng trái tim để lưu tài liệu',
-                    )
-                  : _buildDocumentList(_favoriteDocuments),
+              _buildDocumentListForTab(1),
             ],
           ),
         ),
@@ -449,5 +472,105 @@ class _DocumentsPageState extends State<DocumentsPage>
         ],
       ),
     );
+  }
+
+  // Search and Filter Methods
+  void _performSearch(String query) async {
+    setState(() {
+      _isSearching = query.trim().isNotEmpty;
+    });
+
+    if (query.trim().isEmpty) {
+      setState(() {
+        _filteredDocuments = _allDocuments;
+        _isSearching = false;
+      });
+      return;
+    }
+
+    try {
+      // Use UseCase for search
+      final results = await _searchUseCase.call(
+        query,
+        documents: _allDocuments,
+      );
+      setState(() {
+        _filteredDocuments = results;
+      });
+    } catch (e) {
+      // Handle error
+      setState(() {
+        _filteredDocuments = _allDocuments;
+        _isSearching = false;
+      });
+    }
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    setState(() {
+      _isSearching = false;
+      _filteredDocuments = _allDocuments;
+    });
+  }
+
+  void _showFilterDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => FilterDialog(
+        allDocuments: _isSearching ? _filteredDocuments : _allDocuments,
+        onFilterResults: _handleFilterResults,
+      ),
+    );
+  }
+
+  void _handleFilterResults(List<TaiLieuEntity> results) {
+    setState(() {
+      _filteredDocuments = results;
+      _isFiltered = results.length != _allDocuments.length;
+    });
+  }
+
+  Widget _buildDocumentListForTab(int tabIndex) {
+    List<TaiLieuEntity> documentsToShow;
+    String emptyTitle;
+    String emptySubtitle;
+    IconData emptyIcon;
+
+    if (tabIndex == 0) {
+      // Tab "Tất cả"
+      documentsToShow = (_isSearching || _isFiltered)
+          ? _filteredDocuments
+          : _allDocuments;
+      emptyTitle = 'Chưa có tài liệu';
+      emptySubtitle = (_isSearching || _isFiltered)
+          ? 'Không có tài liệu nào phù hợp với tìm kiếm/bộ lọc'
+          : 'Chưa có tài liệu nào trong hệ thống';
+      emptyIcon = Icons.description_outlined;
+    } else {
+      // Tab "Yêu thích"
+      if (_isSearching || _isFiltered) {
+        documentsToShow = _filteredDocuments
+            .where((doc) => doc.yeuThich)
+            .toList();
+      } else {
+        documentsToShow = _favoriteDocuments;
+      }
+      emptyTitle = 'Chưa có tài liệu yêu thích';
+      emptySubtitle = (_isSearching || _isFiltered)
+          ? 'Không có tài liệu yêu thích nào phù hợp với tìm kiếm/bộ lọc'
+          : 'Nhấn vào biểu tượng trái tim để lưu tài liệu';
+      emptyIcon = Icons.favorite_border;
+    }
+
+    if (documentsToShow.isEmpty) {
+      return _buildEmptyState(
+        icon: emptyIcon,
+        title: emptyTitle,
+        subtitle: emptySubtitle,
+      );
+    }
+
+    return _buildDocumentList(documentsToShow);
   }
 }
