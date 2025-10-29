@@ -10,6 +10,7 @@ import '../../domain/entities/lich_hoc_entity.dart';
 import '../../domain/entities/tai_lieu_entity.dart';
 import '../../domain/entities/giang_vien_entity.dart';
 import '../../domain/entities/bang_diem_entity.dart';
+import '../../../../core/utils/grade_converter.dart';
 
 class DataGeneratorService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -204,7 +205,7 @@ class DataGeneratorService {
         tenHB: 'Học bổng khuyến khích học tập',
         moTa: 'Học bổng dành cho sinh viên có thành tích học tập xuất sắc',
         giaTri: 5000000,
-        thoiHanDangKy: DateTime(2024, 12, 31),
+        thoiHanDangKy: DateTime(2026, 12, 31),
         trangThaiDangKy: 'Mở',
       ),
       HocBongEntity(
@@ -212,7 +213,7 @@ class DataGeneratorService {
         tenHB: 'Học bổng hỗ trợ sinh viên nghèo',
         moTa: 'Học bổng hỗ trợ sinh viên có hoàn cảnh khó khăn',
         giaTri: 3000000,
-        thoiHanDangKy: DateTime(2024, 11, 30),
+        thoiHanDangKy: DateTime(2026, 11, 30),
         trangThaiDangKy: 'Mở',
       ),
       HocBongEntity(
@@ -220,7 +221,7 @@ class DataGeneratorService {
         tenHB: 'Học bổng nghiên cứu khoa học',
         moTa: 'Học bổng dành cho sinh viên tham gia nghiên cứu khoa học',
         giaTri: 7000000,
-        thoiHanDangKy: DateTime(2024, 10, 15),
+        thoiHanDangKy: DateTime(2026, 10, 15),
         trangThaiDangKy: 'Mở',
       ),
       HocBongEntity(
@@ -228,7 +229,7 @@ class DataGeneratorService {
         tenHB: 'Học bổng tài năng',
         moTa: 'Học bổng dành cho sinh viên có tài năng đặc biệt',
         giaTri: 10000000,
-        thoiHanDangKy: DateTime(2024, 9, 30),
+        thoiHanDangKy: DateTime(2026, 9, 30),
         trangThaiDangKy: 'Mở',
       ),
       HocBongEntity(
@@ -236,7 +237,7 @@ class DataGeneratorService {
         tenHB: 'Học bổng thực tập tốt',
         moTa: 'Học bổng dành cho sinh viên có thành tích thực tập xuất sắc',
         giaTri: 4000000,
-        thoiHanDangKy: DateTime(2024, 8, 31),
+        thoiHanDangKy: DateTime(2026, 8, 31),
         trangThaiDangKy: 'Mở',
       ),
     ];
@@ -293,7 +294,7 @@ class DataGeneratorService {
   Future<void> _generateBangDiemData() async {
     final bangDiemList = [
       // Điểm của sinh viên SV001
-      BangDiemEntity(
+      _createBangDiem(
         maBD: 'BD001',
         maSV: 'SV001',
         maMon: 'MH001',
@@ -301,7 +302,7 @@ class DataGeneratorService {
         namHoc: 2024,
         diem: 8.5,
       ),
-      BangDiemEntity(
+      _createBangDiem(
         maBD: 'BD002',
         maSV: 'SV001',
         maMon: 'MH002',
@@ -309,7 +310,7 @@ class DataGeneratorService {
         namHoc: 2024,
         diem: 7.8,
       ),
-      BangDiemEntity(
+      _createBangDiem(
         maBD: 'BD003',
         maSV: 'SV001',
         maMon: 'MH003',
@@ -318,7 +319,7 @@ class DataGeneratorService {
         diem: 9.2,
       ),
       // Điểm của sinh viên SV002
-      BangDiemEntity(
+      _createBangDiem(
         maBD: 'BD004',
         maSV: 'SV002',
         maMon: 'MH001',
@@ -326,7 +327,7 @@ class DataGeneratorService {
         namHoc: 2024,
         diem: 8.0,
       ),
-      BangDiemEntity(
+      _createBangDiem(
         maBD: 'BD005',
         maSV: 'SV002',
         maMon: 'MH002',
@@ -334,7 +335,7 @@ class DataGeneratorService {
         namHoc: 2024,
         diem: 8.7,
       ),
-      BangDiemEntity(
+      _createBangDiem(
         maBD: 'BD006',
         maSV: 'SV002',
         maMon: 'MH004',
@@ -343,7 +344,7 @@ class DataGeneratorService {
         diem: 7.5,
       ),
       // Điểm của sinh viên SV003
-      BangDiemEntity(
+      _createBangDiem(
         maBD: 'BD007',
         maSV: 'SV003',
         maMon: 'MH003',
@@ -351,7 +352,7 @@ class DataGeneratorService {
         namHoc: 2024,
         diem: 9.0,
       ),
-      BangDiemEntity(
+      _createBangDiem(
         maBD: 'BD008',
         maSV: 'SV003',
         maMon: 'MH004',
@@ -359,7 +360,7 @@ class DataGeneratorService {
         namHoc: 2024,
         diem: 8.3,
       ),
-      BangDiemEntity(
+      _createBangDiem(
         maBD: 'BD009',
         maSV: 'SV003',
         maMon: 'MH005',
@@ -372,6 +373,28 @@ class DataGeneratorService {
     for (final bangDiem in bangDiemList) {
       await _firestore.collection('bangDiem').add(bangDiem.toFirestore());
     }
+  }
+
+  /// Helper method để tạo BangDiemEntity với tự động tính điểm hệ 4 và điểm chữ
+  BangDiemEntity _createBangDiem({
+    required String maBD,
+    required String maSV,
+    required String maMon,
+    required String hocky,
+    required int namHoc,
+    required double diem,
+  }) {
+    final converted = GradeConverter.convertGrade(diem);
+    return BangDiemEntity(
+      maBD: maBD,
+      maSV: maSV,
+      maMon: maMon,
+      hocky: hocky,
+      namHoc: namHoc,
+      diem: diem,
+      diemHe4: converted['diemHe4'] as double,
+      diemChu: converted['diemChu'] as String,
+    );
   }
 
   Future<void> _generateDanhGiaData() async {

@@ -34,6 +34,9 @@ import '../../features/scholarship/presentation/pages/registered_scholarships_pa
 import '../../features/support_request/presentation/pages/support_request_page.dart';
 import '../../features/support_request/presentation/pages/support_request_detail_page.dart';
 
+// Features - GPA
+import '../../features/gpa/presentation/pages/gpa_page.dart';
+
 // Layout
 import '../../core/presentation/layouts/main_layout.dart';
 
@@ -157,6 +160,10 @@ class AppGoRouter {
               final request = state.extra;
               return SupportRequestDetailPage(request: request as dynamic);
             },
+          ),
+          GoRoute(
+            path: AppRoutes.gpa,
+            builder: (context, state) => const GPAPage(),
           ),
         ],
       ),
