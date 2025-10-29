@@ -327,31 +327,51 @@ class DataGeneratorService {
     final lienHeList = [
       LienHeEntity(
         maLienHe: 'LH001',
-        noiDung: 'Tôi muốn hỏi về thủ tục đăng ký học bổng',
+        noiDung: '''Mã sinh viên: SV001
+Tên: Nguyễn Văn An
+Lớp: CNTT01
+Loại yêu cầu: Hỗ trợ học tập
+Nội dung: Tôi muốn hỏi về thủ tục đăng ký học bổng''',
         ngayGui: DateTime(2024, 1, 5),
         trangThaiPhanHoi: 'Đã phản hồi',
       ),
       LienHeEntity(
         maLienHe: 'LH002',
-        noiDung: 'Cần hỗ trợ về việc đăng ký môn học',
+        noiDung: '''Mã sinh viên: SV002
+Tên: Trần Thị Bình
+Lớp: CNTT02
+Loại yêu cầu: Hỗ trợ học tập
+Nội dung: Cần hỗ trợ về việc đăng ký môn học''',
         ngayGui: DateTime(2024, 1, 8),
         trangThaiPhanHoi: 'Đang xử lý',
       ),
       LienHeEntity(
         maLienHe: 'LH003',
-        noiDung: 'Báo cáo lỗi hệ thống đăng nhập',
+        noiDung: '''Mã sinh viên: SV003
+Tên: Lê Văn Cường
+Lớp: KT01
+Loại yêu cầu: Vấn đề kỹ thuật
+Nội dung: Báo cáo lỗi hệ thống đăng nhập''',
         ngayGui: DateTime(2024, 1, 10),
         trangThaiPhanHoi: 'Đã phản hồi',
       ),
       LienHeEntity(
         maLienHe: 'LH004',
-        noiDung: 'Yêu cầu cấp lại thẻ sinh viên',
+        noiDung: '''Mã sinh viên: SV004
+Tên: Phạm Thị Dung
+Lớp: QTKD01
+Loại yêu cầu: Làm lại thẻ sinh viên
+Nội dung: Yêu cầu cấp lại thẻ sinh viên''',
         ngayGui: DateTime(2024, 1, 12),
         trangThaiPhanHoi: 'Đang xử lý',
       ),
       LienHeEntity(
         maLienHe: 'LH005',
-        noiDung: 'Hỏi về lịch thi cuối kỳ',
+        noiDung: '''Mã sinh viên: SV005
+Tên: Hoàng Văn Em
+Lớp: CNTT01
+Loại yêu cầu: Hỗ trợ học tập
+Nội dung: Hỏi về lịch thi cuối kỳ''',
         ngayGui: DateTime(2024, 1, 15),
         trangThaiPhanHoi: 'Chưa phản hồi',
       ),

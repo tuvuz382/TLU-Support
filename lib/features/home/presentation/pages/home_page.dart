@@ -176,7 +176,7 @@ class HomePage extends StatelessWidget {
                       context,
                       icon: Icons.headset_mic,
                       label: 'Liên hệ/Hỗ trợ',
-                      onTap: () {},
+                      onTap: () => context.go('/support-request'),
                     ),
                   ],
                 ),

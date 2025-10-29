@@ -26,17 +26,13 @@ class LienHeEntity extends Equatable {
     return LienHeEntity(
       maLienHe: data['maLienHe'] ?? '',
       noiDung: data['noiDung'] ?? '',
-      ngayGui: DateTime.parse(data['ngayGui'] ?? DateTime.now().toIso8601String()),
+      ngayGui: DateTime.parse(
+        data['ngayGui'] ?? DateTime.now().toIso8601String(),
+      ),
       trangThaiPhanHoi: data['trangThaiPhanHoi'] ?? '',
     );
   }
 
   @override
-  List<Object?> get props => [
-        maLienHe,
-        noiDung,
-        ngayGui,
-        trangThaiPhanHoi,
-      ];
+  List<Object?> get props => [maLienHe, noiDung, ngayGui, trangThaiPhanHoi];
 }
-
