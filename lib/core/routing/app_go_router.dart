@@ -26,6 +26,8 @@ import '../../features/notifications/presentation/pages/notification_detail_page
 // Features - Scholarship
 import '../../features/scholarship/presentation/pages/scholarship_list_page.dart';
 import '../../features/scholarship/presentation/pages/scholarship_detail_page.dart';
+import '../../features/scholarship/presentation/pages/scholarship_registration_page.dart';
+import '../../features/scholarship/presentation/pages/scholarship_registration_info_page.dart';
 import '../../features/scholarship/presentation/pages/registered_scholarships_page.dart';
 
 // Features - Support Request
@@ -106,7 +108,35 @@ class AppGoRouter {
       ),
       GoRoute(
         path: AppRoutes.scholarshipDetail,
-        builder: (context, state) => const ScholarshipDetailPage(),
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          final scholarshipTitle = extra?['scholarshipTitle'] as String?;
+          return ScholarshipDetailPage(scholarshipTitle: scholarshipTitle ?? 'Học bổng khuyến khích học tập theo Quy định của Bộ GD&ĐT');
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.scholarshipRegistration,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          final scholarshipTitle = extra?['scholarshipTitle'] as String? ?? 'Học bổng';
+          return ScholarshipRegistrationPage(scholarshipTitle: scholarshipTitle);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.scholarshipRegistrationInfo,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return ScholarshipRegistrationInfoPage(
+            scholarshipTitle: extra['scholarshipTitle'] as String,
+            studentId: extra['studentId'] as String,
+            fullName: extra['fullName'] as String,
+            email: extra['email'] as String,
+            dateOfBirth: extra['dateOfBirth'] as DateTime,
+            classInfo: extra['class'] as String,
+            major: extra['major'] as String,
+            gpa: extra['gpa'] as String,
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.registeredScholarships,

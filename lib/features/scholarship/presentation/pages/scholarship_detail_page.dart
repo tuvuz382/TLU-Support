@@ -4,7 +4,12 @@ import '../../../../core/presentation/theme/app_colors.dart';
 import '../../../../core/routing/app_routes.dart';
 
 class ScholarshipDetailPage extends StatelessWidget {
-  const ScholarshipDetailPage({super.key});
+  final String scholarshipTitle;
+  
+  const ScholarshipDetailPage({
+    super.key,
+    this.scholarshipTitle = 'Học bổng khuyến khích học tập theo Quy định của Bộ GD&ĐT',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -49,9 +54,9 @@ class ScholarshipDetailPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Title
-              const Text(
-                'Học bổng khuyến khích học tập theo Quy định của Bộ GD&ĐT',
-                style: TextStyle(
+              Text(
+                scholarshipTitle,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
@@ -134,7 +139,7 @@ class ScholarshipDetailPage extends StatelessWidget {
               // Register Button
               Center(
                 child: GestureDetector(
-                  onTap: () => _showRegistrationDialog(context),
+                  onTap: () => _navigateToRegistration(context),
                   child: Container(
                     width: double.infinity,
                     height: 50,
@@ -189,49 +194,9 @@ class ScholarshipDetailPage extends StatelessWidget {
     );
   }
 
-  void _showRegistrationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Xác nhận đăng ký'),
-          content: const Text('Bạn có chắc chắn muốn đăng ký học bổng này không?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Hủy'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _showSuccessDialog(context);
-              },
-              child: const Text('Đăng ký'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showSuccessDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Đăng ký thành công'),
-          content: const Text('Bạn đã đăng ký học bổng thành công. Vui lòng chờ thông báo kết quả.'),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                context.go(AppRoutes.registeredScholarships);
-              },
-              child: const Text('Xem đã đăng ký'),
-            ),
-          ],
-        );
-      },
-    );
+  void _navigateToRegistration(BuildContext context) {
+    context.go(AppRoutes.scholarshipRegistration, extra: {
+      'scholarshipTitle': scholarshipTitle,
+    });
   }
 }

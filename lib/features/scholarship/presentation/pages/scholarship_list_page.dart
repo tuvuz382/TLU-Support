@@ -154,7 +154,9 @@ class _ScholarshipListPageState extends State<ScholarshipListPage> {
 
   Widget _buildScholarshipCard(String title, String deadline) {
     return GestureDetector(
-      onTap: () => context.go(AppRoutes.scholarshipDetail),
+      onTap: () => context.go(AppRoutes.scholarshipDetail, extra: {
+        'scholarshipTitle': title,
+      }),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(16),
