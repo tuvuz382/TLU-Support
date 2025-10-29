@@ -12,4 +12,6 @@ class AppRoutes {
   static const String scholarshipList = '/scholarship-list';
   static const String scholarshipDetail = '/scholarship-detail';
   static const String registeredScholarships = '/registered-scholarships';
+  static const String supportRequest = '/support-request';
+  static const String supportRequestDetail = '/support-request-detail';
 }

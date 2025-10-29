@@ -26,6 +26,10 @@ import '../../features/scholarship/presentation/pages/scholarship_list_page.dart
 import '../../features/scholarship/presentation/pages/scholarship_detail_page.dart';
 import '../../features/scholarship/presentation/pages/registered_scholarships_page.dart';
 
+// Features - Support Request
+import '../../features/support_request/presentation/pages/support_request_page.dart';
+import '../../features/support_request/presentation/pages/support_request_detail_page.dart';
+
 // Layout
 import '../../core/presentation/layouts/main_layout.dart';
 
@@ -99,6 +103,17 @@ class AppGoRouter {
       GoRoute(
         path: AppRoutes.registeredScholarships,
         builder: (context, state) => const RegisteredScholarshipsPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.supportRequest,
+        builder: (context, state) => const SupportRequestPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.supportRequestDetail,
+        builder: (context, state) {
+          final request = state.extra;
+          return SupportRequestDetailPage(request: request as dynamic);
+        },
       ),
     ],
     redirect: (context, state) {
