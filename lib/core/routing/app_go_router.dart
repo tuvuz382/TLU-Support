@@ -34,6 +34,10 @@ import '../../features/scholarship/presentation/pages/registered_scholarships_pa
 import '../../features/support_request/presentation/pages/support_request_page.dart';
 import '../../features/support_request/presentation/pages/support_request_detail_page.dart';
 
+// Features - Teacher
+import '../../features/teacher/presentation/pages/teacher_list_page.dart';
+import '../../features/teacher/presentation/pages/teacher_detail_page.dart';
+
 // Layout
 import '../../core/presentation/layouts/main_layout.dart';
 
@@ -156,6 +160,17 @@ class AppGoRouter {
             builder: (context, state) {
               final request = state.extra;
               return SupportRequestDetailPage(request: request as dynamic);
+            },
+          ),
+          GoRoute(
+            path: AppRoutes.teacherList,
+            builder: (context, state) => const TeacherListPage(),
+          ),
+          GoRoute(
+            path: AppRoutes.teacherDetail,
+            builder: (context, state) {
+              final teacher = state.extra;
+              return TeacherDetailPage(teacher: teacher as dynamic);
             },
           ),
         ],

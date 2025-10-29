@@ -1,0 +1,25 @@
+import '../../domain/repositories/teacher_repository.dart';
+import '../../../data_generator/domain/entities/giang_vien_entity.dart';
+import '../datasources/firebase_teacher_datasource.dart';
+
+class TeacherRepositoryImpl implements TeacherRepository {
+  final FirebaseTeacherDataSource _dataSource;
+
+  TeacherRepositoryImpl(this._dataSource);
+
+  @override
+  Future<List<GiangVienEntity>> getAllTeachers() async {
+    return await _dataSource.getAllTeachers();
+  }
+
+  @override
+  Future<GiangVienEntity?> getTeacherById(String maGV) async {
+    return await _dataSource.getTeacherById(maGV);
+  }
+
+  @override
+  Future<List<GiangVienEntity>> searchTeachers(String query) async {
+    return await _dataSource.searchTeachers(query);
+  }
+}
+
