@@ -8,6 +8,8 @@ import '../../domain/entities/lien_he_entity.dart';
 import '../../domain/entities/thong_bao_entity.dart';
 import '../../domain/entities/lich_hoc_entity.dart';
 import '../../domain/entities/tai_lieu_entity.dart';
+import '../../domain/entities/giang_vien_entity.dart';
+import '../../domain/entities/bang_diem_entity.dart';
 
 class DataGeneratorService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -15,9 +17,11 @@ class DataGeneratorService {
   Future<void> generateSampleData() async {
     try {
       // Tạo dữ liệu mẫu cho tất cả các collection
+      await _generateGiangVienData();
       await _generateSinhVienData();
       await _generateHocBongData();
       await _generateMonHocData();
+      await _generateBangDiemData();
       await _generateDanhGiaData();
       await _generateGhiChuData();
       await _generateLienHeData();
@@ -32,9 +36,11 @@ class DataGeneratorService {
   Future<void> deleteAllSampleData() async {
     try {
       // Xóa dữ liệu từ tất cả các collection
+      await _deleteCollectionData('giangVien');
       await _deleteCollectionData('sinhVien');
       await _deleteCollectionData('hocBong');
       await _deleteCollectionData('monHoc');
+      await _deleteCollectionData('bangDiem');
       await _deleteCollectionData('danhGia');
       await _deleteCollectionData('ghiChu');
       await _deleteCollectionData('lienHe');
@@ -61,6 +67,55 @@ class DataGeneratorService {
     }
   }
 
+  Future<void> _generateGiangVienData() async {
+    final giangVienList = [
+      GiangVienEntity(
+        maGV: 'GV001',
+        hoTen: 'ThS. Nguyễn Văn A',
+        email: 'nguyenvana@tlu.edu.vn',
+        chuyenNganh: 'Công nghệ thông tin',
+        hocVi: 'Thạc sĩ',
+        soDT: '0123456789',
+      ),
+      GiangVienEntity(
+        maGV: 'GV002',
+        hoTen: 'TS. Trần Thị B',
+        email: 'tranthib@tlu.edu.vn',
+        chuyenNganh: 'Công nghệ thông tin',
+        hocVi: 'Tiến sĩ',
+        soDT: '0123456790',
+      ),
+      GiangVienEntity(
+        maGV: 'GV003',
+        hoTen: 'ThS. Lê Văn C',
+        email: 'levanc@tlu.edu.vn',
+        chuyenNganh: 'Công nghệ thông tin',
+        hocVi: 'Thạc sĩ',
+        soDT: '0123456791',
+      ),
+      GiangVienEntity(
+        maGV: 'GV004',
+        hoTen: 'TS. Phạm Thị D',
+        email: 'phamthid@tlu.edu.vn',
+        chuyenNganh: 'Công nghệ thông tin',
+        hocVi: 'Tiến sĩ',
+        soDT: '0123456792',
+      ),
+      GiangVienEntity(
+        maGV: 'GV005',
+        hoTen: 'ThS. Hoàng Văn E',
+        email: 'hoangvane@tlu.edu.vn',
+        chuyenNganh: 'Công nghệ thông tin',
+        hocVi: 'Thạc sĩ',
+        soDT: '0123456793',
+      ),
+    ];
+
+    for (final giangVien in giangVienList) {
+      await _firestore.collection('giangVien').add(giangVien.toFirestore());
+    }
+  }
+
   Future<void> _generateSinhVienData() async {
     final sinhVienList = [
       SinhVienEntity(
@@ -69,7 +124,7 @@ class DataGeneratorService {
         email: 'an.nguyen@student.tlu.edu.vn',
         matKhau: 'password123',
         ngaySinh: DateTime(2000, 5, 15),
-        lop: 'CNTT01',
+        lop: 'CNTT21A',
         nganhHoc: 'Công nghệ thông tin',
         diemGPA: 3.5,
         hocBongDangKy: ['HB001', 'HB002'],
@@ -81,7 +136,7 @@ class DataGeneratorService {
         email: 'binh.tran@student.tlu.edu.vn',
         matKhau: 'password123',
         ngaySinh: DateTime(2001, 8, 22),
-        lop: 'CNTT02',
+        lop: 'CNTT21A',
         nganhHoc: 'Công nghệ thông tin',
         diemGPA: 3.8,
         hocBongDangKy: ['HB001'],
@@ -93,8 +148,8 @@ class DataGeneratorService {
         email: 'cuong.le@student.tlu.edu.vn',
         matKhau: 'password123',
         ngaySinh: DateTime(1999, 12, 10),
-        lop: 'KT01',
-        nganhHoc: 'Kế toán',
+        lop: 'CNTT21B',
+        nganhHoc: 'Công nghệ thông tin',
         diemGPA: 3.2,
         hocBongDangKy: ['HB003'],
         anhDaiDien: null,
@@ -105,8 +160,8 @@ class DataGeneratorService {
         email: 'dung.pham@student.tlu.edu.vn',
         matKhau: 'password123',
         ngaySinh: DateTime(2000, 3, 18),
-        lop: 'QTKD01',
-        nganhHoc: 'Quản trị kinh doanh',
+        lop: 'CNTT22A',
+        nganhHoc: 'Công nghệ thông tin',
         diemGPA: 3.6,
         hocBongDangKy: ['HB002', 'HB004'],
         anhDaiDien: null,
@@ -195,6 +250,7 @@ class DataGeneratorService {
     final monHocList = [
       MonHocEntity(
         maMon: 'MH001',
+        maGV: 'GV001',
         tenMon: 'Lập trình hướng đối tượng',
         soTinChi: 3,
         moTa: 'Môn học về lập trình hướng đối tượng sử dụng Java',
@@ -202,6 +258,7 @@ class DataGeneratorService {
       ),
       MonHocEntity(
         maMon: 'MH002',
+        maGV: 'GV002',
         tenMon: 'Cơ sở dữ liệu',
         soTinChi: 3,
         moTa: 'Môn học về thiết kế và quản lý cơ sở dữ liệu',
@@ -209,6 +266,7 @@ class DataGeneratorService {
       ),
       MonHocEntity(
         maMon: 'MH003',
+        maGV: 'GV003',
         tenMon: 'Mạng máy tính',
         soTinChi: 3,
         moTa: 'Môn học về nguyên lý và ứng dụng mạng máy tính',
@@ -216,6 +274,7 @@ class DataGeneratorService {
       ),
       MonHocEntity(
         maMon: 'MH004',
+        maGV: 'GV004',
         tenMon: 'Phân tích thiết kế hệ thống',
         soTinChi: 3,
         moTa: 'Môn học về phân tích và thiết kế hệ thống thông tin',
@@ -223,6 +282,7 @@ class DataGeneratorService {
       ),
       MonHocEntity(
         maMon: 'MH005',
+        maGV: 'GV005',
         tenMon: 'Phát triển ứng dụng di động',
         soTinChi: 3,
         moTa: 'Môn học về phát triển ứng dụng trên nền tảng di động',
@@ -232,6 +292,90 @@ class DataGeneratorService {
 
     for (final monHoc in monHocList) {
       await _firestore.collection('monHoc').add(monHoc.toFirestore());
+    }
+  }
+
+  Future<void> _generateBangDiemData() async {
+    final bangDiemList = [
+      // Điểm của sinh viên SV001
+      BangDiemEntity(
+        maBD: 'BD001',
+        maSV: 'SV001',
+        maMon: 'MH001',
+        hocky: 'HK1',
+        namHoc: 2024,
+        diem: 8.5,
+      ),
+      BangDiemEntity(
+        maBD: 'BD002',
+        maSV: 'SV001',
+        maMon: 'MH002',
+        hocky: 'HK1',
+        namHoc: 2024,
+        diem: 7.8,
+      ),
+      BangDiemEntity(
+        maBD: 'BD003',
+        maSV: 'SV001',
+        maMon: 'MH003',
+        hocky: 'HK1',
+        namHoc: 2024,
+        diem: 9.2,
+      ),
+      // Điểm của sinh viên SV002
+      BangDiemEntity(
+        maBD: 'BD004',
+        maSV: 'SV002',
+        maMon: 'MH001',
+        hocky: 'HK1',
+        namHoc: 2024,
+        diem: 8.0,
+      ),
+      BangDiemEntity(
+        maBD: 'BD005',
+        maSV: 'SV002',
+        maMon: 'MH002',
+        hocky: 'HK1',
+        namHoc: 2024,
+        diem: 8.7,
+      ),
+      BangDiemEntity(
+        maBD: 'BD006',
+        maSV: 'SV002',
+        maMon: 'MH004',
+        hocky: 'HK1',
+        namHoc: 2024,
+        diem: 7.5,
+      ),
+      // Điểm của sinh viên SV003
+      BangDiemEntity(
+        maBD: 'BD007',
+        maSV: 'SV003',
+        maMon: 'MH003',
+        hocky: 'HK1',
+        namHoc: 2024,
+        diem: 9.0,
+      ),
+      BangDiemEntity(
+        maBD: 'BD008',
+        maSV: 'SV003',
+        maMon: 'MH004',
+        hocky: 'HK1',
+        namHoc: 2024,
+        diem: 8.3,
+      ),
+      BangDiemEntity(
+        maBD: 'BD009',
+        maSV: 'SV003',
+        maMon: 'MH005',
+        hocky: 'HK1',
+        namHoc: 2024,
+        diem: 8.8,
+      ),
+    ];
+
+    for (final bangDiem in bangDiemList) {
+      await _firestore.collection('bangDiem').add(bangDiem.toFirestore());
     }
   }
 
@@ -422,46 +566,121 @@ Nội dung: Hỏi về lịch thi cuối kỳ''',
   }
 
   Future<void> _generateLichHocData() async {
+    final now = DateTime.now();
     final lichHocList = [
+      // Lịch học cho lớp CNTT21A
       LichHocEntity(
         maLich: 'LH001',
         maMon: 'MH001',
-        ngayHoc: 'Thứ 2',
+        ngayHoc: DateTime(now.year, now.month, now.day + 1), // Ngày mai
         tietHoc: 'Tiết 1-3',
         phongHoc: 'A101',
         giangVienPhuTrach: 'ThS. Nguyễn Văn A',
+        lop: 'CNTT21A',
+        nganhHoc: 'Công nghệ thông tin',
       ),
       LichHocEntity(
         maLich: 'LH002',
         maMon: 'MH002',
-        ngayHoc: 'Thứ 3',
+        ngayHoc: DateTime(now.year, now.month, now.day + 2), // Ngày kia
         tietHoc: 'Tiết 4-6',
         phongHoc: 'A102',
         giangVienPhuTrach: 'TS. Trần Thị B',
+        lop: 'CNTT21A',
+        nganhHoc: 'Công nghệ thông tin',
       ),
       LichHocEntity(
         maLich: 'LH003',
         maMon: 'MH003',
-        ngayHoc: 'Thứ 4',
+        ngayHoc: DateTime(now.year, now.month, now.day + 3), // 3 ngày sau
         tietHoc: 'Tiết 1-3',
         phongHoc: 'A103',
         giangVienPhuTrach: 'ThS. Lê Văn C',
+        lop: 'CNTT21A',
+        nganhHoc: 'Công nghệ thông tin',
       ),
       LichHocEntity(
         maLich: 'LH004',
         maMon: 'MH004',
-        ngayHoc: 'Thứ 5',
+        ngayHoc: DateTime(now.year, now.month, now.day + 4), // 4 ngày sau
         tietHoc: 'Tiết 4-6',
         phongHoc: 'A104',
         giangVienPhuTrach: 'TS. Phạm Thị D',
+        lop: 'CNTT21A',
+        nganhHoc: 'Công nghệ thông tin',
       ),
       LichHocEntity(
         maLich: 'LH005',
         maMon: 'MH005',
-        ngayHoc: 'Thứ 6',
+        ngayHoc: DateTime(now.year, now.month, now.day + 5), // 5 ngày sau
         tietHoc: 'Tiết 1-3',
         phongHoc: 'A105',
         giangVienPhuTrach: 'ThS. Hoàng Văn E',
+        lop: 'CNTT21A',
+        nganhHoc: 'Công nghệ thông tin',
+      ),
+      // Thêm một số lịch học hôm nay để test
+      LichHocEntity(
+        maLich: 'LH006',
+        maMon: 'MH001',
+        ngayHoc: DateTime(now.year, now.month, now.day), // Hôm nay
+        tietHoc: 'Tiết 7-9',
+        phongHoc: 'A201',
+        giangVienPhuTrach: 'ThS. Nguyễn Văn A',
+        lop: 'CNTT21A',
+        nganhHoc: 'Công nghệ thông tin',
+      ),
+      LichHocEntity(
+        maLich: 'LH007',
+        maMon: 'MH002',
+        ngayHoc: DateTime(now.year, now.month, now.day), // Hôm nay
+        tietHoc: 'Tiết 10-12',
+        phongHoc: 'A202',
+        giangVienPhuTrach: 'TS. Trần Thị B',
+        lop: 'CNTT21A',
+        nganhHoc: 'Công nghệ thông tin',
+      ),
+      // Lịch học cho lớp CNTT21B
+      LichHocEntity(
+        maLich: 'LH008',
+        maMon: 'MH001',
+        ngayHoc: DateTime(now.year, now.month, now.day + 1),
+        tietHoc: 'Tiết 4-6',
+        phongHoc: 'B101',
+        giangVienPhuTrach: 'ThS. Nguyễn Văn A',
+        lop: 'CNTT21B',
+        nganhHoc: 'Công nghệ thông tin',
+      ),
+      LichHocEntity(
+        maLich: 'LH009',
+        maMon: 'MH003',
+        ngayHoc: DateTime(now.year, now.month, now.day + 2),
+        tietHoc: 'Tiết 7-9',
+        phongHoc: 'B102',
+        giangVienPhuTrach: 'ThS. Lê Văn C',
+        lop: 'CNTT21B',
+        nganhHoc: 'Công nghệ thông tin',
+      ),
+      // Lịch học cho lớp CNTT22A
+      LichHocEntity(
+        maLich: 'LH010',
+        maMon: 'MH002',
+        ngayHoc: DateTime(now.year, now.month, now.day + 1),
+        tietHoc: 'Tiết 1-3',
+        phongHoc: 'C101',
+        giangVienPhuTrach: 'TS. Trần Thị B',
+        lop: 'CNTT22A',
+        nganhHoc: 'Công nghệ thông tin',
+      ),
+      LichHocEntity(
+        maLich: 'LH011',
+        maMon: 'MH004',
+        ngayHoc: DateTime(now.year, now.month, now.day + 3),
+        tietHoc: 'Tiết 4-6',
+        phongHoc: 'C102',
+        giangVienPhuTrach: 'TS. Phạm Thị D',
+        lop: 'CNTT22A',
+        nganhHoc: 'Công nghệ thông tin',
       ),
     ];
 
