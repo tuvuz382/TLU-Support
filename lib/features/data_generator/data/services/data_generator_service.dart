@@ -10,7 +10,6 @@ import '../../domain/entities/lich_hoc_entity.dart';
 import '../../domain/entities/tai_lieu_entity.dart';
 import '../../domain/entities/giang_vien_entity.dart';
 import '../../domain/entities/bang_diem_entity.dart';
-import '../../../../core/utils/grade_converter.dart';
 
 class DataGeneratorService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -384,7 +383,6 @@ class DataGeneratorService {
     required int namHoc,
     required double diem,
   }) {
-    final converted = GradeConverter.convertGrade(diem);
     return BangDiemEntity(
       maBD: maBD,
       maSV: maSV,
@@ -392,9 +390,27 @@ class DataGeneratorService {
       hocky: hocky,
       namHoc: namHoc,
       diem: diem,
-      diemHe4: converted['diemHe4'] as double,
-      diemChu: converted['diemChu'] as String,
+      diemHe4: _convertTo4PointScale(diem),
+      diemChu: _convertToLetterGrade(diem),
     );
+  }
+
+  /// Chuyển đổi điểm hệ 10 sang điểm hệ 4
+  double _convertTo4PointScale(double diemHe10) {
+    if (diemHe10 >= 8.5) return 4.0;
+    if (diemHe10 >= 7.0) return 3.0;
+    if (diemHe10 >= 5.5) return 2.0;
+    if (diemHe10 >= 4.0) return 1.0;
+    return 0.0;
+  }
+
+  /// Chuyển đổi điểm hệ 10 sang điểm chữ
+  String _convertToLetterGrade(double diemHe10) {
+    if (diemHe10 >= 8.5) return 'A';
+    if (diemHe10 >= 7.0) return 'B';
+    if (diemHe10 >= 5.5) return 'C';
+    if (diemHe10 >= 4.0) return 'D';
+    return 'F';
   }
 
   Future<void> _generateDanhGiaData() async {
