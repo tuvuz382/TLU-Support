@@ -113,7 +113,6 @@ class _SchedulePageState extends State<SchedulePage>
         tenMon: 'Môn học không xác định',
         soTinChi: 0,
         moTa: '',
-        danhGiaTB: 0.0,
       ),
     );
     return subject.tenMon;

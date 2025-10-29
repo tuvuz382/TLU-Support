@@ -254,7 +254,6 @@ class DataGeneratorService {
         tenMon: 'Lập trình hướng đối tượng',
         soTinChi: 3,
         moTa: 'Môn học về lập trình hướng đối tượng sử dụng Java',
-        danhGiaTB: 4.2,
       ),
       MonHocEntity(
         maMon: 'MH002',
@@ -262,7 +261,6 @@ class DataGeneratorService {
         tenMon: 'Cơ sở dữ liệu',
         soTinChi: 3,
         moTa: 'Môn học về thiết kế và quản lý cơ sở dữ liệu',
-        danhGiaTB: 4.0,
       ),
       MonHocEntity(
         maMon: 'MH003',
@@ -270,7 +268,6 @@ class DataGeneratorService {
         tenMon: 'Mạng máy tính',
         soTinChi: 3,
         moTa: 'Môn học về nguyên lý và ứng dụng mạng máy tính',
-        danhGiaTB: 3.8,
       ),
       MonHocEntity(
         maMon: 'MH004',
@@ -278,7 +275,6 @@ class DataGeneratorService {
         tenMon: 'Phân tích thiết kế hệ thống',
         soTinChi: 3,
         moTa: 'Môn học về phân tích và thiết kế hệ thống thông tin',
-        danhGiaTB: 4.1,
       ),
       MonHocEntity(
         maMon: 'MH005',
@@ -286,7 +282,6 @@ class DataGeneratorService {
         tenMon: 'Phát triển ứng dụng di động',
         soTinChi: 3,
         moTa: 'Môn học về phát triển ứng dụng trên nền tảng di động',
-        danhGiaTB: 4.3,
       ),
     ];
 
@@ -383,42 +378,37 @@ class DataGeneratorService {
     final danhGiaList = [
       DanhGiaEntity(
         maDanhGia: 'DG001',
-        maMon: 'MH001',
+        maGV: 'GV001',
         maSV: 'SV001',
-        noiDung: 'Môn học rất hay và bổ ích, giảng viên nhiệt tình',
-        diemDanhGia: 4.5,
+        noiDung: 'Giảng viên giảng dạy rất nhiệt tình và dễ hiểu, phương pháp giảng dạy linh hoạt',
         ngayDanhGia: DateTime(2024, 1, 15),
       ),
       DanhGiaEntity(
         maDanhGia: 'DG002',
-        maMon: 'MH001',
+        maGV: 'GV001',
         maSV: 'SV002',
-        noiDung: 'Nội dung môn học phù hợp với thực tế',
-        diemDanhGia: 4.0,
+        noiDung: 'Giảng viên có kiến thức sâu rộng, luôn sẵn sàng hỗ trợ sinh viên trong quá trình học tập',
         ngayDanhGia: DateTime(2024, 1, 16),
       ),
       DanhGiaEntity(
         maDanhGia: 'DG003',
-        maMon: 'MH002',
+        maGV: 'GV002',
         maSV: 'SV001',
-        noiDung: 'Môn học khó nhưng rất quan trọng',
-        diemDanhGia: 3.8,
+        noiDung: 'Giảng viên giải thích rõ ràng, bài giảng có cấu trúc tốt và dễ theo dõi',
         ngayDanhGia: DateTime(2024, 1, 20),
       ),
       DanhGiaEntity(
         maDanhGia: 'DG004',
-        maMon: 'MH003',
+        maGV: 'GV003',
         maSV: 'SV003',
-        noiDung: 'Giảng viên giảng dạy rất dễ hiểu',
-        diemDanhGia: 4.2,
+        noiDung: 'Giảng viên có phong cách giảng dạy thú vị, tạo không khí học tập tích cực',
         ngayDanhGia: DateTime(2024, 1, 25),
       ),
       DanhGiaEntity(
         maDanhGia: 'DG005',
-        maMon: 'MH005',
+        maGV: 'GV005',
         maSV: 'SV005',
-        noiDung: 'Môn học thú vị và có tính ứng dụng cao',
-        diemDanhGia: 4.7,
+        noiDung: 'Giảng viên rất chuyên nghiệp, luôn cập nhật kiến thức mới và áp dụng vào giảng dạy',
         ngayDanhGia: DateTime(2024, 2, 1),
       ),
     ];
