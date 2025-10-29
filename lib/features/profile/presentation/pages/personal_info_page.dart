@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '/core/presentation/theme/app_colors.dart';
 import '/features/data_generator/domain/entities/sinh_vien_entity.dart';
-import '../../domain/repositories/student_profile_repository.dart';
 import '../../data/repositories/student_profile_repository_impl.dart';
 import '../../data/datasources/student_profile_remote_datasource.dart';
+import '../../domain/usecases/get_current_student_profile_usecase.dart';
+import '../../domain/usecases/update_student_profile_usecase.dart';
+import '../../domain/usecases/update_profile_image_usecase.dart';
 import '/features/auth/domain/repositories/auth_repository.dart';
 import '/features/auth/data/repositories/auth_repository_impl.dart';
 
@@ -23,7 +25,9 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   final _classController = TextEditingController();
   final _majorController = TextEditingController();
   
-  late final StudentProfileRepository _studentRepository;
+  late final GetCurrentStudentProfileUseCase _getProfileUseCase;
+  late final UpdateStudentProfileUseCase _updateProfileUseCase;
+  late final UpdateProfileImageUseCase _updateImageUseCase;
   late final AuthRepository _authRepository;
   SinhVienEntity? _studentProfile;
   bool _isLoading = true;
@@ -34,7 +38,10 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     super.initState();
     // Dependency Injection setup
     final dataSource = StudentProfileRemoteDataSource();
-    _studentRepository = StudentProfileRepositoryImpl(remoteDataSource: dataSource);
+    final repository = StudentProfileRepositoryImpl(remoteDataSource: dataSource);
+    _getProfileUseCase = GetCurrentStudentProfileUseCase(repository);
+    _updateProfileUseCase = UpdateStudentProfileUseCase(repository);
+    _updateImageUseCase = UpdateProfileImageUseCase(repository);
     _authRepository = AuthRepositoryImpl();
     _loadStudentProfile();
   }
@@ -51,7 +58,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
 
   Future<void> _loadStudentProfile() async {
     try {
-      final profile = await _studentRepository.getCurrentStudentProfile();
+      final profile = await _getProfileUseCase();
       if (mounted) {
         setState(() {
           _studentProfile = profile;
@@ -125,7 +132,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         anhDaiDien: _studentProfile?.anhDaiDien,
       );
 
-      await _studentRepository.updateStudentProfile(updatedStudent);
+      await _updateProfileUseCase(updatedStudent);
 
       if (mounted) {
         Navigator.of(context).pop(); // Đóng loading dialog
@@ -230,7 +237,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
               final imageUrl = controller.text.trim();
               if (imageUrl.isNotEmpty) {
                 try {
-                  await _studentRepository.updateProfileImage(imageUrl);
+                  await _updateImageUseCase(imageUrl);
                   
                   setState(() {
                     if (_studentProfile != null) {
