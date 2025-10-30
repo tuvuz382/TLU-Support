@@ -88,8 +88,11 @@ class ScholarshipEntity extends Equatable {
   /// Kiểm tra học bổng có đang mở đăng ký không
   bool get isOpenForRegistration {
     final now = DateTime.now();
-    return now.isAfter(thoiHanDangKyBatDau) &&
-        now.isBefore(thoiHanDangKyKetThuc);
+    final startsOk = now.isAfter(thoiHanDangKyBatDau) ||
+        now.isAtSameMomentAs(thoiHanDangKyBatDau);
+    final endsOk = now.isBefore(thoiHanDangKyKetThuc) ||
+        now.isAtSameMomentAs(thoiHanDangKyKetThuc);
+    return startsOk && endsOk;
   }
 
   /// Kiểm tra học bổng đã hết hạn đăng ký chưa

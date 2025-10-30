@@ -5,10 +5,8 @@ import '/features/data_generator/domain/entities/sinh_vien_entity.dart';
 import '../../data/repositories/student_profile_repository_impl.dart';
 import '../../data/datasources/student_profile_remote_datasource.dart';
 import '../../domain/usecases/get_current_student_profile_usecase.dart';
-import '../../domain/usecases/update_student_profile_usecase.dart';
 import '../../domain/usecases/update_profile_image_usecase.dart';
-import '/features/auth/domain/repositories/auth_repository.dart';
-import '/features/auth/data/repositories/auth_repository_impl.dart';
+import '../../domain/usecases/update_student_profile_usecase.dart';
 
 class PersonalInfoPage extends StatefulWidget {
   const PersonalInfoPage({super.key});
@@ -26,11 +24,10 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   final _majorController = TextEditingController();
   
   late final GetCurrentStudentProfileUseCase _getProfileUseCase;
-  late final UpdateStudentProfileUseCase _updateProfileUseCase;
   late final UpdateProfileImageUseCase _updateImageUseCase;
-  late final AuthRepository _authRepository;
+  late final UpdateStudentProfileUseCase _updateProfileUseCase;
   SinhVienEntity? _studentProfile;
-  bool _isLoading = true;
+  bool _isLoading = false;
   DateTime? _selectedDate;
 
   @override
@@ -40,9 +37,8 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     final dataSource = StudentProfileRemoteDataSource();
     final repository = StudentProfileRepositoryImpl(remoteDataSource: dataSource);
     _getProfileUseCase = GetCurrentStudentProfileUseCase(repository);
-    _updateProfileUseCase = UpdateStudentProfileUseCase(repository);
     _updateImageUseCase = UpdateProfileImageUseCase(repository);
-    _authRepository = AuthRepositoryImpl();
+    _updateProfileUseCase = UpdateStudentProfileUseCase(repository);
     _loadStudentProfile();
   }
 
@@ -67,12 +63,6 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         
         if (profile != null) {
           _populateFields(profile);
-        } else {
-          // Nếu chưa có profile, tạo với thông tin cơ bản từ auth
-          final user = _authRepository.getCurrentUser();
-          if (user?.email != null) {
-            _emailController.text = user!.email!;
-          }
         }
       }
     } catch (e) {
@@ -99,117 +89,67 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     _selectedDate = student.ngaySinh;
   }
 
+
   Future<void> _saveInfo() async {
     if (!_formKey.currentState!.validate()) return;
-
-    try {
-      // Hiển thị loading
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(child: CircularProgressIndicator()),
+    if (_studentProfile == null) {
+      debugPrint('Không có dữ liệu profile!');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Không có dữ liệu profile để lưu'),
+          backgroundColor: Colors.red,
+        ),
       );
-
-      final user = _authRepository.getCurrentUser();
-      final userEmail = user?.email;
-      if (userEmail == null) {
-        throw Exception('Người dùng chưa đăng nhập');
-      }
-
-      // Tạo SinhVienEntity từ form data
-      final updatedStudent = SinhVienEntity(
-        maSV: _studentIdController.text.trim().isEmpty 
-            ? (_studentProfile?.maSV ?? _generateStudentId())
-            : _studentIdController.text.trim(),
+      return;
+    }
+    setState(() { _isLoading = true; });
+    try {
+      final updated = SinhVienEntity(
+        maSV: _studentProfile!.maSV,
         hoTen: _fullNameController.text.trim(),
-        email: userEmail,
-        matKhau: _studentProfile?.matKhau ?? '', // Giữ nguyên hoặc để trống
-        ngaySinh: _selectedDate ?? DateTime.now().subtract(const Duration(days: 365 * 20)),
+        email: _studentProfile!.email,
+        matKhau: _studentProfile!.matKhau,
+        ngaySinh: _studentProfile!.ngaySinh,
         lop: _classController.text.trim(),
         nganhHoc: _majorController.text.trim(),
-        diemGPA: _studentProfile?.diemGPA ?? 0.0,
-        hocBongDangKy: _studentProfile?.hocBongDangKy ?? [],
-        anhDaiDien: _studentProfile?.anhDaiDien,
+        diemGPA: _studentProfile!.diemGPA,
+        hocBongDangKy: _studentProfile!.hocBongDangKy,
+        anhDaiDien: _studentProfile!.anhDaiDien,
       );
-
-      await _updateProfileUseCase(updatedStudent);
-
+      await _updateProfileUseCase(updated);
+      if (!mounted) return;
+      setState(() {
+        _studentProfile = updated;
+        _isLoading = false;
+        _populateFields(updated);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Đã lưu thông tin thành công!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e, st) {
+      debugPrint('Lỗi khi lưu thông tin: $e');
+      debugPrintStack(label: 'STACKTRACE Lỗi cập nhật thông tin', stackTrace: st);
       if (mounted) {
-        Navigator.of(context).pop(); // Đóng loading dialog
-        
-        setState(() {
-          _studentProfile = updatedStudent;
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Đã lưu thông tin thành công!'),
-            backgroundColor: AppColors.success,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        Navigator.of(context).pop(); // Đóng loading dialog
-        
+        setState(() { _isLoading = false; });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi khi lưu thông tin: $e'),
-            backgroundColor: AppColors.error,
+            content: Text('Lưu thông tin thất bại: $e'),
+            backgroundColor: Colors.red,
           ),
         );
       }
     }
   }
 
-  String _generateStudentId() {
-    final now = DateTime.now();
-    final year = now.year.toString().substring(2);
-    final random = now.millisecondsSinceEpoch.toString().substring(8);
-    return 'SV$year$random';
-  }
 
-  void _logout() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Đăng xuất'),
-        content: const Text('Bạn có chắc chắn muốn đăng xuất?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.go('/login_page');
-            },
-            child: const Text('Đăng xuất'),
-          ),
-        ],
-      ),
-    );
-  }
 
-  Future<void> _selectBirthDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate ?? DateTime.now().subtract(const Duration(days: 365 * 20)),
-      firstDate: DateTime(1950),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
-    }
-  }
 
-  Future<void> _updateProfileImage() async {
+  Future<void> _showUpdateAvatarDialog() async {
     final controller = TextEditingController();
-    
-    showDialog(
+    final url = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Cập nhật ảnh đại diện'),
@@ -233,56 +173,51 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
             child: const Text('Hủy'),
           ),
           TextButton(
-            onPressed: () async {
-              final imageUrl = controller.text.trim();
-              if (imageUrl.isNotEmpty) {
-                try {
-                  await _updateImageUseCase(imageUrl);
-                  
-                  setState(() {
-                    if (_studentProfile != null) {
-                      _studentProfile = SinhVienEntity(
-                        maSV: _studentProfile!.maSV,
-                        hoTen: _studentProfile!.hoTen,
-                        email: _studentProfile!.email,
-                        matKhau: _studentProfile!.matKhau,
-                        ngaySinh: _studentProfile!.ngaySinh,
-                        lop: _studentProfile!.lop,
-                        nganhHoc: _studentProfile!.nganhHoc,
-                        diemGPA: _studentProfile!.diemGPA,
-                        hocBongDangKy: _studentProfile!.hocBongDangKy,
-                        anhDaiDien: imageUrl,
-                      );
-                    }
-                  });
-
-                  if (mounted) {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Cập nhật ảnh đại diện thành công!'),
-                        backgroundColor: AppColors.success,
-                      ),
-                    );
-                  }
-                } catch (e) {
-                  if (mounted) {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Lỗi khi cập nhật ảnh: $e'),
-                        backgroundColor: AppColors.error,
-                      ),
-                    );
-                  }
-                }
-              }
-            },
-            child: const Text('Lưu'),
+            onPressed: () => Navigator.pop(context, controller.text.trim()),
+            child: const Text('Cập nhật'),
           ),
         ],
       ),
     );
+    if (url != null && url.isNotEmpty && _studentProfile != null) {
+      setState(() { _isLoading = true; });
+      try {
+        await _updateImageUseCase(url);
+        if (!mounted) return;
+        setState(() {
+          _studentProfile = SinhVienEntity(
+            maSV: _studentProfile!.maSV,
+            hoTen: _studentProfile!.hoTen,
+            email: _studentProfile!.email,
+            matKhau: _studentProfile!.matKhau,
+            ngaySinh: _studentProfile!.ngaySinh,
+            lop: _studentProfile!.lop,
+            nganhHoc: _studentProfile!.nganhHoc,
+            diemGPA: _studentProfile!.diemGPA,
+            hocBongDangKy: _studentProfile!.hocBongDangKy,
+            anhDaiDien: url, // cập nhật ngay
+          );
+          _populateFields(_studentProfile!);
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Đã cập nhật ảnh đại diện!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } catch (e) {
+        if (mounted) {
+          setState(() { _isLoading = false; });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Lỗi khi cập nhật ảnh: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
   }
 
   @override
@@ -314,14 +249,14 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
           ),
         ],
       ),
-      body: _isLoading 
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
                     // Profile Section
                     Stack(
                       children: [
@@ -332,7 +267,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                             shape: BoxShape.circle,
                             color: AppColors.primary,
                           ),
-                          child: _studentProfile?.anhDaiDien != null
+                          child: (_studentProfile?.anhDaiDien != null && _studentProfile!.anhDaiDien!.isNotEmpty)
                               ? ClipOval(
                                   child: Image.network(
                                     _studentProfile!.anhDaiDien!,
@@ -357,7 +292,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                           bottom: 0,
                           right: 0,
                           child: GestureDetector(
-                            onTap: _updateProfileImage,
+                            onTap: _showUpdateAvatarDialog,
                             child: Container(
                               width: 32,
                               height: 32,
@@ -382,12 +317,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                     _buildTextField(
                       label: 'Mã sinh viên',
                       controller: _studentIdController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Vui lòng nhập mã sinh viên';
-                        }
-                        return null;
-                      },
+                      enabled: false,
                     ),
                     
                     const SizedBox(height: 20),
@@ -432,39 +362,36 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        GestureDetector(
-                          onTap: _selectBirthDate,
-                          child: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF5F5F5),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  _selectedDate != null
-                                      ? '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'
-                                      : 'Chọn ngày sinh',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: _selectedDate != null
-                                        ? AppColors.textPrimary
-                                        : AppColors.textSecondary,
-                                  ),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF5F5F5),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                _selectedDate != null
+                                    ? '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'
+                                    : 'Chưa có thông tin',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: _selectedDate != null
+                                      ? AppColors.textPrimary
+                                      : AppColors.textSecondary,
                                 ),
-                                const Icon(
-                                  Icons.calendar_today,
-                                  color: AppColors.primary,
-                                  size: 20,
-                                ),
-                              ],
-                            ),
+                              ),
+                              const Icon(
+                                Icons.calendar_today,
+                                color: Colors.grey,
+                                size: 20,
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -499,56 +426,41 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                     const SizedBox(height: 40),
                     
                     // Action Buttons
-                    Row(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: _saveInfo,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            child: const Text(
-                              'Lưu Thông tin',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
+                        ElevatedButton(
+                          onPressed: _saveInfo,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                        ),
-                        
-                        const SizedBox(width: 16),
-                        
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: _logout,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            child: const Text(
-                              'Đăng xuất',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
+                          child: const Text(
+                            'Lưu Thông tin',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ],
                     ),
-            ],
+                ],
+              ),
+            ),
           ),
-        ),
+          if (_isLoading)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withOpacity(0.2),
+                child: const Center(child: CircularProgressIndicator()),
+              ),
+            ),
+        ],
       ),
     );
   }

@@ -34,7 +34,13 @@ class ScholarshipRegistrationInfoPage extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go(AppRoutes.scholarshipList);
+            }
+          },
         ),
         title: const Text(
           'Học bổng',
