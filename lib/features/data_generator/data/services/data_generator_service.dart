@@ -204,7 +204,7 @@ class DataGeneratorService {
         tenHB: 'Học bổng khuyến khích học tập',
         moTa: 'Học bổng dành cho sinh viên có thành tích học tập xuất sắc',
         giaTri: 5000000,
-        thoiHanDangKy: DateTime(2026, 12, 31),
+        thoiHanDangKy: DateTime(2025, 12, 1),
         trangThaiDangKy: 'Mở',
       ),
       HocBongEntity(
@@ -212,7 +212,7 @@ class DataGeneratorService {
         tenHB: 'Học bổng hỗ trợ sinh viên nghèo',
         moTa: 'Học bổng hỗ trợ sinh viên có hoàn cảnh khó khăn',
         giaTri: 3000000,
-        thoiHanDangKy: DateTime(2026, 11, 30),
+        thoiHanDangKy: DateTime(2025, 12, 1),
         trangThaiDangKy: 'Mở',
       ),
       HocBongEntity(
@@ -220,7 +220,7 @@ class DataGeneratorService {
         tenHB: 'Học bổng nghiên cứu khoa học',
         moTa: 'Học bổng dành cho sinh viên tham gia nghiên cứu khoa học',
         giaTri: 7000000,
-        thoiHanDangKy: DateTime(2026, 10, 15),
+        thoiHanDangKy: DateTime(2025, 12, 1),
         trangThaiDangKy: 'Mở',
       ),
       HocBongEntity(
@@ -228,7 +228,7 @@ class DataGeneratorService {
         tenHB: 'Học bổng tài năng',
         moTa: 'Học bổng dành cho sinh viên có tài năng đặc biệt',
         giaTri: 10000000,
-        thoiHanDangKy: DateTime(2026, 9, 30),
+        thoiHanDangKy: DateTime(2025, 12, 1),
         trangThaiDangKy: 'Mở',
       ),
       HocBongEntity(
@@ -236,7 +236,7 @@ class DataGeneratorService {
         tenHB: 'Học bổng thực tập tốt',
         moTa: 'Học bổng dành cho sinh viên có thành tích thực tập xuất sắc',
         giaTri: 4000000,
-        thoiHanDangKy: DateTime(2026, 8, 31),
+        thoiHanDangKy: DateTime(2025, 12, 1),
         trangThaiDangKy: 'Mở',
       ),
     ];
