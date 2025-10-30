@@ -294,7 +294,9 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.primary),
-          onPressed: () => context.pop(),
+          onPressed: () {
+            context.go('/profile');
+          },
         ),
         title: const Text(
           'Thông tin cá nhân',
@@ -548,21 +550,6 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        height: 80,
-        decoration: const BoxDecoration(
-          color: AppColors.primary,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavItem(Icons.home, true),
-            _buildNavItem(Icons.calendar_today, false),
-            _buildNavItem(Icons.description, false),
-            _buildNavItem(Icons.person, false),
-          ],
-        ),
-      ),
     );
   }
 
@@ -621,17 +608,6 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, bool isActive) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      child: Icon(
-        icon,
-        color: Colors.white,
-        size: 24,
-      ),
     );
   }
 }
