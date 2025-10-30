@@ -4,6 +4,7 @@ import '../../../data_generator/domain/entities/lien_he_entity.dart';
 import '../../data/datasources/firebase_support_request_datasource.dart';
 import '../../data/repositories/support_request_repository_impl.dart';
 import '../../domain/repositories/support_request_repository.dart';
+import '../../domain/usecases/get_pending_requests_usecase.dart';
 import '../widgets/support_request_card.dart';
 
 class PendingRequestsPage extends StatefulWidget {
@@ -15,6 +16,7 @@ class PendingRequestsPage extends StatefulWidget {
 
 class _PendingRequestsPageState extends State<PendingRequestsPage> {
   late SupportRequestRepository _repository;
+  late GetPendingRequestsUseCase _getPendingRequestsUseCase;
   List<LienHeEntity> _pendingRequests = [];
   bool _isLoading = true;
   String? _errorMessage;
@@ -25,6 +27,7 @@ class _PendingRequestsPageState extends State<PendingRequestsPage> {
     _repository = SupportRequestRepositoryImpl(
       FirebaseSupportRequestDataSource(),
     );
+    _getPendingRequestsUseCase = GetPendingRequestsUseCase(_repository);
     _loadPendingRequests();
   }
 
@@ -35,7 +38,7 @@ class _PendingRequestsPageState extends State<PendingRequestsPage> {
     });
 
     try {
-      final requests = await _repository.getPendingRequests();
+      final requests = await _getPendingRequestsUseCase.call();
       setState(() {
         _pendingRequests = requests;
         _isLoading = false;

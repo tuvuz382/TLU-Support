@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '/core/presentation/theme/app_colors.dart';
-import '../../../data_generator/domain/entities/lien_he_entity.dart';
 import '../../data/datasources/firebase_support_request_datasource.dart';
 import '../../data/repositories/support_request_repository_impl.dart';
 import '../../domain/repositories/support_request_repository.dart';
+import '../../domain/usecases/submit_support_request_usecase.dart';
 
 class SupportRequestFormPage extends StatefulWidget {
   const SupportRequestFormPage({super.key});
@@ -15,6 +15,7 @@ class SupportRequestFormPage extends StatefulWidget {
 class _SupportRequestFormPageState extends State<SupportRequestFormPage> {
   final _formKey = GlobalKey<FormState>();
   late SupportRequestRepository _repository;
+  late SubmitSupportRequestUseCase _submitSupportRequestUseCase;
 
   final _maSinhVienController = TextEditingController();
   final _tenSinhVienController = TextEditingController();
@@ -39,6 +40,7 @@ class _SupportRequestFormPageState extends State<SupportRequestFormPage> {
     _repository = SupportRequestRepositoryImpl(
       FirebaseSupportRequestDataSource(),
     );
+    _submitSupportRequestUseCase = SubmitSupportRequestUseCase(_repository);
   }
 
   @override
@@ -70,25 +72,13 @@ class _SupportRequestFormPageState extends State<SupportRequestFormPage> {
     });
 
     try {
-      // Gộp tất cả thông tin vào noiDung
-      final noiDung = _buildNoiDung();
-
-      // Tạo mã liên hệ tự động
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final maLienHe =
-          'LH${timestamp.toString().substring(timestamp.toString().length - 6)}';
-
-      // Tạo entity
-      final request = LienHeEntity(
-        maLienHe: maLienHe,
-        noiDung: noiDung,
-        ngayGui: DateTime.now(),
-        trangThaiPhanHoi: 'Chưa phản hồi',
+      await _submitSupportRequestUseCase.call(
         maSV: _maSinhVienController.text,
+        tenSV: _tenSinhVienController.text,
+        lop: _lopController.text,
+        loaiYeuCau: _selectedRequestType!,
+        noiDungChiTiet: _noiDungController.text,
       );
-
-      // Gửi yêu cầu
-      await _repository.submitSupportRequest(request);
 
       if (mounted) {
         // Reset form
@@ -122,14 +112,6 @@ class _SupportRequestFormPageState extends State<SupportRequestFormPage> {
         });
       }
     }
-  }
-
-  String _buildNoiDung() {
-    return '''Mã sinh viên: ${_maSinhVienController.text}
-Tên: ${_tenSinhVienController.text}
-Lớp: ${_lopController.text}
-Loại yêu cầu: $_selectedRequestType
-Nội dung: ${_noiDungController.text}''';
   }
 
   @override
