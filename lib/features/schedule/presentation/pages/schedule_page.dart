@@ -10,6 +10,8 @@ import '../../data/datasources/firebase_schedule_datasource.dart';
 import '../../../profile/data/repositories/student_profile_repository_impl.dart';
 import '../../../profile/data/datasources/student_profile_remote_datasource.dart';
 import '../../../profile/domain/usecases/get_current_student_profile_usecase.dart';
+import '../../../data_generator/domain/entities/giang_vien_entity.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SchedulePage extends StatefulWidget {
   const SchedulePage({super.key});
@@ -30,6 +32,7 @@ class _SchedulePageState extends State<SchedulePage>
   SinhVienEntity? _currentStudent;
   bool _isLoading = true;
   String? _errorMessage;
+  List<GiangVienEntity> _lecturers = [];
 
   @override
   void initState() {
@@ -77,10 +80,13 @@ class _SchedulePageState extends State<SchedulePage>
       final futures = await Future.wait([
         _repository.getAllSchedules(),
         _repository.getAllSubjects(),
+        FirebaseFirestore.instance.collection('giangVien').get(),
       ]);
 
       final allSchedules = futures[0] as List<LichHocEntity>;
       final subjects = futures[1] as List<MonHocEntity>;
+      final lecturersSnap = futures[2] as QuerySnapshot;
+      final lecturers = lecturersSnap.docs.map((doc) => GiangVienEntity.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
 
       // Lọc lịch học theo lớp của sinh viên
       final filteredSchedules = allSchedules
@@ -94,6 +100,7 @@ class _SchedulePageState extends State<SchedulePage>
         _allSchedules = filteredSchedules;
         _todaySchedules = todaySchedules;
         _subjects = subjects;
+        _lecturers = lecturers;
         _isLoading = false;
       });
     } catch (e) {
@@ -113,9 +120,37 @@ class _SchedulePageState extends State<SchedulePage>
         tenMon: 'Môn học không xác định',
         soTinChi: 0,
         moTa: '',
+        chuyenNganh: '',
       ),
     );
     return subject.tenMon;
+  }
+
+  String _getLecturerName(String maMon) {
+    final subject = _subjects.firstWhere(
+      (s) => s.maMon == maMon,
+      orElse: () => MonHocEntity(
+        maMon: maMon,
+        maGV: '',
+        tenMon: 'Môn học không xác định',
+        soTinChi: 0,
+        moTa: '',
+        chuyenNganh: '',
+      ),
+    );
+    if (subject.maGV.isEmpty) return '---';
+    final lecturer = _lecturers.firstWhere(
+      (g) => g.maGV == subject.maGV,
+      orElse: () => GiangVienEntity(
+        maGV: '',
+        hoTen: 'Không xác định',
+        email: '',
+        chuyenNganh: '',
+        hocVi: '',
+        soDT: '',
+      ),
+    );
+    return lecturer.hoTen;
   }
 
   String _getCurrentDateString() {
@@ -186,7 +221,7 @@ class _SchedulePageState extends State<SchedulePage>
             _buildInfoRow('Môn học:', subjectName),
             _buildInfoRow('Tiết:', schedule.tietHoc),
             _buildInfoRow('Phòng:', schedule.phongHoc),
-            _buildInfoRow('Giảng viên:', schedule.giangVienPhuTrach),
+            _buildInfoRow('Giảng viên:', _getLecturerName(schedule.maMon)),
           ],
         ),
       ),

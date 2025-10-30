@@ -6,6 +6,7 @@ class MonHocEntity extends Equatable {
   final String tenMon;
   final int soTinChi;
   final String moTa;
+  final String chuyenNganh;
 
   const MonHocEntity({
     required this.maMon,
@@ -13,6 +14,7 @@ class MonHocEntity extends Equatable {
     required this.tenMon,
     required this.soTinChi,
     required this.moTa,
+    required this.chuyenNganh,
   });
 
   Map<String, dynamic> toFirestore() {
@@ -22,6 +24,7 @@ class MonHocEntity extends Equatable {
       'tenMon': tenMon,
       'soTinChi': soTinChi,
       'moTa': moTa,
+      'chuyenNganh': chuyenNganh,
     };
   }
 
@@ -32,6 +35,7 @@ class MonHocEntity extends Equatable {
       tenMon: data['tenMon'] ?? '',
       soTinChi: data['soTinChi'] ?? 0,
       moTa: data['moTa'] ?? '',
+      chuyenNganh: data['chuyenNganh'] ?? '',
     );
   }
 
@@ -42,6 +46,7 @@ class MonHocEntity extends Equatable {
         tenMon,
         soTinChi,
         moTa,
+        chuyenNganh,
       ];
 }
 
