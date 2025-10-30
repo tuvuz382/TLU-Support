@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '/core/presentation/theme/app_colors.dart';
 import '../../../data_generator/domain/entities/lich_hoc_entity.dart';
@@ -350,6 +351,12 @@ class _SchedulePageState extends State<SchedulePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+              context.go('/');
+          },
+        ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
