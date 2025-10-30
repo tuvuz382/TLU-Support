@@ -20,6 +20,8 @@ class _TeacherListPageState extends State<TeacherListPage> {
   bool _isLoading = true;
   String? _errorMessage;
   String _searchQuery = '';
+  String? _selectedChuyenNganh;
+  List<String> _chuyenNganhs = [];
 
   @override
   void initState() {
@@ -39,6 +41,13 @@ class _TeacherListPageState extends State<TeacherListPage> {
       setState(() {
         _allTeachers = teachers;
         _filteredTeachers = teachers;
+        // Lấy danh sách chuyên ngành duy nhất
+        _chuyenNganhs = teachers
+            .map((e) => e.chuyenNganh)
+            .where((e) => e.trim().isNotEmpty)
+            .toSet()
+            .toList();
+        _chuyenNganhs.sort((a, b) => a.compareTo(b));
         _isLoading = false;
       });
     } catch (e) {
@@ -71,6 +80,26 @@ class _TeacherListPageState extends State<TeacherListPage> {
         _filteredTeachers = [];
       });
     }
+  }
+
+  void _onChuyenNganhChanged(String? value) {
+    setState(() {
+      _selectedChuyenNganh = value;
+      _filterTeachers();
+    });
+  }
+
+  void _filterTeachers() {
+    List<GiangVienEntity> filtered = _allTeachers;
+    if (_searchQuery.isNotEmpty) {
+      filtered = filtered.where((t) => t.hoTen.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+    }
+    if (_selectedChuyenNganh != null && _selectedChuyenNganh!.isNotEmpty) {
+      filtered = filtered.where((t) => t.chuyenNganh == _selectedChuyenNganh).toList();
+    }
+    setState(() {
+      _filteredTeachers = filtered;
+    });
   }
 
   @override
@@ -114,28 +143,66 @@ class _TeacherListPageState extends State<TeacherListPage> {
         Container(
           padding: const EdgeInsets.all(16),
           color: Colors.white,
-          child: TextField(
-            onChanged: _onSearchChanged,
-            decoration: InputDecoration(
-              hintText: 'Tìm kiếm giảng viên...',
-              prefixIcon: const Icon(Icons.search, color: Colors.grey),
-              suffixIcon: _searchQuery.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(Icons.clear, color: Colors.grey),
-                      onPressed: () => _onSearchChanged(''),
-                    )
-                  : null,
-              filled: true,
-              fillColor: Colors.grey[100],
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
+          child: Column(
+            children: [
+              TextField(
+                onChanged: (val) {
+                  _searchQuery = val;
+                  _filterTeachers();
+                },
+                decoration: InputDecoration(
+                  hintText: 'Tìm kiếm giảng viên...',
+                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, color: Colors.grey),
+                          onPressed: () {
+                            _searchQuery = '';
+                            _filterTeachers();
+                          },
+                        )
+                      : null,
+                  filled: true,
+                  fillColor: Colors.grey[100],
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                ),
               ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ),
-            ),
+              const SizedBox(height: 12),
+              if (_chuyenNganhs.isNotEmpty)
+                Row(
+                  children: [
+                    const Icon(Icons.work_outline, size: 20, color: Colors.grey),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: DropdownButton<String>(
+                        isExpanded: true,
+                        value: _selectedChuyenNganh,
+                        hint: const Text('Lọc theo chuyên ngành'),
+                        items: [
+                          const DropdownMenuItem(
+                            value: '',
+                            child: Text('Tất cả chuyên ngành'),
+                          ),
+                          ..._chuyenNganhs.map((chuyenNganh) => DropdownMenuItem(
+                            value: chuyenNganh,
+                            child: Text(chuyenNganh),
+                          )),
+                        ],
+                        onChanged: (value) {
+                          _onChuyenNganhChanged(value == '' ? null : value);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+            ],
           ),
         ),
 
