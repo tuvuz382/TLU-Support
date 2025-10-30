@@ -110,7 +110,7 @@ class DocumentDetailPage extends StatelessWidget {
               ),
               Expanded(
                 child: Text(
-                  _getSubjectName(document.monHoc),
+                  _getSubjectName(document.maMon),
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
@@ -230,7 +230,7 @@ class DocumentDetailPage extends StatelessWidget {
   Widget _buildDocumentPreview() {
     // Tạo màu dựa trên môn học
     Color backgroundColor;
-    switch (document.monHoc) {
+    switch (document.maMon) {
       case 'MH001':
         backgroundColor = const Color(0xFFFF9800);
         break;
@@ -323,7 +323,7 @@ class DocumentDetailPage extends StatelessWidget {
 
           // Subject info
           Text(
-            _getSubjectName(document.monHoc),
+            _getSubjectName(document.maMon),
             textAlign: TextAlign.center,
             style: TextStyle(
               color: backgroundColor == const Color(0xFFE0E0E0)
@@ -424,8 +424,8 @@ class DocumentDetailPage extends StatelessWidget {
     );
   }
 
-  String _getSubjectName(String monHoc) {
-    switch (monHoc) {
+  String _getSubjectName(String maMon) {
+    switch (maMon) {
       case 'MH001':
         return 'Lập trình hướng đối tượng';
       case 'MH002':
@@ -437,7 +437,7 @@ class DocumentDetailPage extends StatelessWidget {
       case 'MH005':
         return 'Phát triển ứng dụng di động';
       default:
-        return monHoc;
+        return maMon;
     }
   }
 

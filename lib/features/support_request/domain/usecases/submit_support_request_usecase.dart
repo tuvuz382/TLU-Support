@@ -55,6 +55,7 @@ class SubmitSupportRequestUseCase {
       noiDung: noiDung,
       ngayGui: DateTime.now(),
       trangThaiPhanHoi: 'Chưa phản hồi',
+      maSV: maSV.trim(),
     );
 
     // Submit to repository

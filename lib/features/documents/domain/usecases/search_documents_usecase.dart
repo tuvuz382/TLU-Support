@@ -29,7 +29,7 @@ class SearchDocumentsUseCase {
                 doc.tenTL.toLowerCase().contains(
                   normalizedQuery.toLowerCase(),
                 ) ||
-                doc.monHoc.toLowerCase().contains(
+                doc.maMon.toLowerCase().contains(
                   normalizedQuery.toLowerCase(),
                 ) ||
                 doc.moTa.toLowerCase().contains(normalizedQuery.toLowerCase()),

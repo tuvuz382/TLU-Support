@@ -18,7 +18,7 @@ class FilterDocumentsUseCase {
     // Filter by subject
     if (subject != null && subject.isNotEmpty) {
       filteredDocuments = filteredDocuments
-          .where((doc) => doc.monHoc == subject)
+          .where((doc) => doc.maMon == subject)
           .toList();
     }
 
@@ -44,10 +44,10 @@ class FilterDocumentsUseCase {
         documents.sort((a, b) => b.tenTL.compareTo(a.tenTL));
         break;
       case 'subject_asc':
-        documents.sort((a, b) => a.monHoc.compareTo(b.monHoc));
+        documents.sort((a, b) => a.maMon.compareTo(b.maMon));
         break;
       case 'subject_desc':
-        documents.sort((a, b) => b.monHoc.compareTo(a.monHoc));
+        documents.sort((a, b) => b.maMon.compareTo(a.maMon));
         break;
       // Default: no sorting
     }

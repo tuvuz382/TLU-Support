@@ -204,7 +204,7 @@ class DataGeneratorService {
         tenHB: 'Học bổng khuyến khích học tập',
         moTa: 'Học bổng dành cho sinh viên có thành tích học tập xuất sắc',
         giaTri: 5000000,
-        thoiHanDangKy: DateTime(2026, 12, 31),
+        thoiHanDangKy: DateTime(2025, 12, 31),
         trangThaiDangKy: 'Mở',
       ),
       HocBongEntity(
@@ -212,7 +212,7 @@ class DataGeneratorService {
         tenHB: 'Học bổng hỗ trợ sinh viên nghèo',
         moTa: 'Học bổng hỗ trợ sinh viên có hoàn cảnh khó khăn',
         giaTri: 3000000,
-        thoiHanDangKy: DateTime(2026, 11, 30),
+        thoiHanDangKy: DateTime(2025, 11, 30),
         trangThaiDangKy: 'Mở',
       ),
       HocBongEntity(
@@ -220,7 +220,7 @@ class DataGeneratorService {
         tenHB: 'Học bổng nghiên cứu khoa học',
         moTa: 'Học bổng dành cho sinh viên tham gia nghiên cứu khoa học',
         giaTri: 7000000,
-        thoiHanDangKy: DateTime(2026, 10, 15),
+        thoiHanDangKy: DateTime(2025, 10, 15),
         trangThaiDangKy: 'Mở',
       ),
       HocBongEntity(
@@ -228,7 +228,7 @@ class DataGeneratorService {
         tenHB: 'Học bổng tài năng',
         moTa: 'Học bổng dành cho sinh viên có tài năng đặc biệt',
         giaTri: 10000000,
-        thoiHanDangKy: DateTime(2026, 9, 30),
+        thoiHanDangKy: DateTime(2025, 9, 30),
         trangThaiDangKy: 'Mở',
       ),
       HocBongEntity(
@@ -236,7 +236,7 @@ class DataGeneratorService {
         tenHB: 'Học bổng thực tập tốt',
         moTa: 'Học bổng dành cho sinh viên có thành tích thực tập xuất sắc',
         giaTri: 4000000,
-        thoiHanDangKy: DateTime(2026, 8, 31),
+        thoiHanDangKy: DateTime(2025, 8, 31),
         trangThaiDangKy: 'Mở',
       ),
     ];
@@ -254,6 +254,7 @@ class DataGeneratorService {
         tenMon: 'Lập trình hướng đối tượng',
         soTinChi: 3,
         moTa: 'Môn học về lập trình hướng đối tượng sử dụng Java',
+        chuyenNganh: 'Công nghệ phần mềm',
       ),
       MonHocEntity(
         maMon: 'MH002',
@@ -261,6 +262,7 @@ class DataGeneratorService {
         tenMon: 'Cơ sở dữ liệu',
         soTinChi: 3,
         moTa: 'Môn học về thiết kế và quản lý cơ sở dữ liệu',
+        chuyenNganh: 'Cơ sở dữ liệu',
       ),
       MonHocEntity(
         maMon: 'MH003',
@@ -268,6 +270,7 @@ class DataGeneratorService {
         tenMon: 'Mạng máy tính',
         soTinChi: 3,
         moTa: 'Môn học về nguyên lý và ứng dụng mạng máy tính',
+        chuyenNganh: 'Mạng máy tính',
       ),
       MonHocEntity(
         maMon: 'MH004',
@@ -275,6 +278,7 @@ class DataGeneratorService {
         tenMon: 'Phân tích thiết kế hệ thống',
         soTinChi: 3,
         moTa: 'Môn học về phân tích và thiết kế hệ thống thông tin',
+        chuyenNganh: 'Hệ thống thông tin',
       ),
       MonHocEntity(
         maMon: 'MH005',
@@ -282,6 +286,7 @@ class DataGeneratorService {
         tenMon: 'Phát triển ứng dụng di động',
         soTinChi: 3,
         moTa: 'Môn học về phát triển ứng dụng trên nền tảng di động',
+        chuyenNganh: 'Công nghệ phần mềm',
       ),
     ];
 
@@ -463,31 +468,31 @@ class DataGeneratorService {
         maGhiChu: 'GC001',
         noiDung: 'Cần ôn tập lại phần inheritance trong OOP',
         ngayTao: DateTime(2024, 1, 10),
-        monHoc: 'MH001',
+        tieuDe: 'MH001',
       ),
       GhiChuEntity(
         maGhiChu: 'GC002',
         noiDung: 'Làm bài tập về SQL queries',
         ngayTao: DateTime(2024, 1, 12),
-        monHoc: 'MH002',
+        tieuDe: 'MH002',
       ),
       GhiChuEntity(
         maGhiChu: 'GC003',
         noiDung: 'Tìm hiểu về TCP/IP protocol',
         ngayTao: DateTime(2024, 1, 15),
-        monHoc: 'MH003',
+        tieuDe: 'MH003',
       ),
       GhiChuEntity(
         maGhiChu: 'GC004',
         noiDung: 'Chuẩn bị presentation về UML diagrams',
         ngayTao: DateTime(2024, 1, 18),
-        monHoc: 'MH004',
+        tieuDe: 'MH004',
       ),
       GhiChuEntity(
         maGhiChu: 'GC005',
         noiDung: 'Thực hành Flutter widgets',
         ngayTao: DateTime(2024, 1, 20),
-        monHoc: 'MH005',
+        tieuDe: 'MH005',
       ),
     ];
 
@@ -500,6 +505,7 @@ class DataGeneratorService {
     final lienHeList = [
       LienHeEntity(
         maLienHe: 'LH001',
+        maSV: 'SV001',
         noiDung: '''Mã sinh viên: SV001
 Tên: Nguyễn Văn An
 Lớp: CNTT01
@@ -510,6 +516,7 @@ Nội dung: Tôi muốn hỏi về thủ tục đăng ký học bổng''',
       ),
       LienHeEntity(
         maLienHe: 'LH002',
+        maSV: 'SV002',
         noiDung: '''Mã sinh viên: SV002
 Tên: Trần Thị Bình
 Lớp: CNTT02
@@ -520,6 +527,7 @@ Nội dung: Cần hỗ trợ về việc đăng ký môn học''',
       ),
       LienHeEntity(
         maLienHe: 'LH003',
+        maSV: 'SV003',
         noiDung: '''Mã sinh viên: SV003
 Tên: Lê Văn Cường
 Lớp: KT01
@@ -530,6 +538,7 @@ Nội dung: Báo cáo lỗi hệ thống đăng nhập''',
       ),
       LienHeEntity(
         maLienHe: 'LH004',
+        maSV: 'SV004',
         noiDung: '''Mã sinh viên: SV004
 Tên: Phạm Thị Dung
 Lớp: QTKD01
@@ -540,6 +549,7 @@ Nội dung: Yêu cầu cấp lại thẻ sinh viên''',
       ),
       LienHeEntity(
         maLienHe: 'LH005',
+        maSV: 'SV005',
         noiDung: '''Mã sinh viên: SV005
 Tên: Hoàng Văn Em
 Lớp: CNTT01
@@ -604,9 +614,7 @@ Nội dung: Hỏi về lịch thi cuối kỳ''',
         ngayHoc: DateTime(now.year, now.month, now.day + 1), // Ngày mai
         tietHoc: 'Tiết 1-3',
         phongHoc: 'A101',
-        giangVienPhuTrach: 'ThS. Nguyễn Văn A',
         lop: 'CNTT21A',
-        nganhHoc: 'Công nghệ thông tin',
       ),
       LichHocEntity(
         maLich: 'LH002',
@@ -614,9 +622,7 @@ Nội dung: Hỏi về lịch thi cuối kỳ''',
         ngayHoc: DateTime(now.year, now.month, now.day + 2), // Ngày kia
         tietHoc: 'Tiết 4-6',
         phongHoc: 'A102',
-        giangVienPhuTrach: 'TS. Trần Thị B',
         lop: 'CNTT21A',
-        nganhHoc: 'Công nghệ thông tin',
       ),
       LichHocEntity(
         maLich: 'LH003',
@@ -624,9 +630,7 @@ Nội dung: Hỏi về lịch thi cuối kỳ''',
         ngayHoc: DateTime(now.year, now.month, now.day + 3), // 3 ngày sau
         tietHoc: 'Tiết 1-3',
         phongHoc: 'A103',
-        giangVienPhuTrach: 'ThS. Lê Văn C',
         lop: 'CNTT21A',
-        nganhHoc: 'Công nghệ thông tin',
       ),
       LichHocEntity(
         maLich: 'LH004',
@@ -634,9 +638,7 @@ Nội dung: Hỏi về lịch thi cuối kỳ''',
         ngayHoc: DateTime(now.year, now.month, now.day + 4), // 4 ngày sau
         tietHoc: 'Tiết 4-6',
         phongHoc: 'A104',
-        giangVienPhuTrach: 'TS. Phạm Thị D',
         lop: 'CNTT21A',
-        nganhHoc: 'Công nghệ thông tin',
       ),
       LichHocEntity(
         maLich: 'LH005',
@@ -644,9 +646,7 @@ Nội dung: Hỏi về lịch thi cuối kỳ''',
         ngayHoc: DateTime(now.year, now.month, now.day + 5), // 5 ngày sau
         tietHoc: 'Tiết 1-3',
         phongHoc: 'A105',
-        giangVienPhuTrach: 'ThS. Hoàng Văn E',
         lop: 'CNTT21A',
-        nganhHoc: 'Công nghệ thông tin',
       ),
       // Thêm một số lịch học hôm nay để test
       LichHocEntity(
@@ -655,9 +655,7 @@ Nội dung: Hỏi về lịch thi cuối kỳ''',
         ngayHoc: DateTime(now.year, now.month, now.day), // Hôm nay
         tietHoc: 'Tiết 7-9',
         phongHoc: 'A201',
-        giangVienPhuTrach: 'ThS. Nguyễn Văn A',
         lop: 'CNTT21A',
-        nganhHoc: 'Công nghệ thông tin',
       ),
       LichHocEntity(
         maLich: 'LH007',
@@ -665,9 +663,7 @@ Nội dung: Hỏi về lịch thi cuối kỳ''',
         ngayHoc: DateTime(now.year, now.month, now.day), // Hôm nay
         tietHoc: 'Tiết 10-12',
         phongHoc: 'A202',
-        giangVienPhuTrach: 'TS. Trần Thị B',
         lop: 'CNTT21A',
-        nganhHoc: 'Công nghệ thông tin',
       ),
       // Lịch học cho lớp CNTT21B
       LichHocEntity(
@@ -676,9 +672,7 @@ Nội dung: Hỏi về lịch thi cuối kỳ''',
         ngayHoc: DateTime(now.year, now.month, now.day + 1),
         tietHoc: 'Tiết 4-6',
         phongHoc: 'B101',
-        giangVienPhuTrach: 'ThS. Nguyễn Văn A',
         lop: 'CNTT21B',
-        nganhHoc: 'Công nghệ thông tin',
       ),
       LichHocEntity(
         maLich: 'LH009',
@@ -686,9 +680,7 @@ Nội dung: Hỏi về lịch thi cuối kỳ''',
         ngayHoc: DateTime(now.year, now.month, now.day + 2),
         tietHoc: 'Tiết 7-9',
         phongHoc: 'B102',
-        giangVienPhuTrach: 'ThS. Lê Văn C',
         lop: 'CNTT21B',
-        nganhHoc: 'Công nghệ thông tin',
       ),
       // Lịch học cho lớp CNTT22A
       LichHocEntity(
@@ -697,9 +689,7 @@ Nội dung: Hỏi về lịch thi cuối kỳ''',
         ngayHoc: DateTime(now.year, now.month, now.day + 1),
         tietHoc: 'Tiết 1-3',
         phongHoc: 'C101',
-        giangVienPhuTrach: 'TS. Trần Thị B',
         lop: 'CNTT22A',
-        nganhHoc: 'Công nghệ thông tin',
       ),
       LichHocEntity(
         maLich: 'LH011',
@@ -707,9 +697,7 @@ Nội dung: Hỏi về lịch thi cuối kỳ''',
         ngayHoc: DateTime(now.year, now.month, now.day + 3),
         tietHoc: 'Tiết 4-6',
         phongHoc: 'C102',
-        giangVienPhuTrach: 'TS. Phạm Thị D',
         lop: 'CNTT22A',
-        nganhHoc: 'Công nghệ thông tin',
       ),
     ];
 
@@ -723,7 +711,7 @@ Nội dung: Hỏi về lịch thi cuối kỳ''',
       TaiLieuEntity(
         maTL: 'TL001',
         tenTL: 'Slide bài giảng OOP',
-        monHoc: 'MH001',
+        maMon: 'MH001',
         duongDan: '/documents/oop_slides.pdf',
         moTa: 'Slide bài giảng về lập trình hướng đối tượng',
         yeuThich: true,
@@ -731,7 +719,7 @@ Nội dung: Hỏi về lịch thi cuối kỳ''',
       TaiLieuEntity(
         maTL: 'TL002',
         tenTL: 'Bài tập SQL',
-        monHoc: 'MH002',
+        maMon: 'MH002',
         duongDan: '/documents/sql_exercises.pdf',
         moTa: 'Tập hợp các bài tập về SQL',
         yeuThich: false,
@@ -739,7 +727,7 @@ Nội dung: Hỏi về lịch thi cuối kỳ''',
       TaiLieuEntity(
         maTL: 'TL003',
         tenTL: 'Tài liệu mạng máy tính',
-        monHoc: 'MH003',
+        maMon: 'MH003',
         duongDan: '/documents/network_basics.pdf',
         moTa: 'Tài liệu cơ bản về mạng máy tính',
         yeuThich: true,
@@ -747,7 +735,7 @@ Nội dung: Hỏi về lịch thi cuối kỳ''',
       TaiLieuEntity(
         maTL: 'TL004',
         tenTL: 'UML Diagrams Guide',
-        monHoc: 'MH004',
+        maMon: 'MH004',
         duongDan: '/documents/uml_guide.pdf',
         moTa: 'Hướng dẫn vẽ các loại biểu đồ UML',
         yeuThich: false,
@@ -755,7 +743,7 @@ Nội dung: Hỏi về lịch thi cuối kỳ''',
       TaiLieuEntity(
         maTL: 'TL005',
         tenTL: 'Flutter Widgets Reference',
-        monHoc: 'MH005',
+        maMon: 'MH005',
         duongDan: '/documents/flutter_widgets.pdf',
         moTa: 'Tài liệu tham khảo về Flutter widgets',
         yeuThich: true,

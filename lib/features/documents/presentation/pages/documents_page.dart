@@ -77,7 +77,7 @@ class _DocumentsPageState extends State<DocumentsPage>
           _allDocuments[index] = TaiLieuEntity(
             maTL: _allDocuments[index].maTL,
             tenTL: _allDocuments[index].tenTL,
-            monHoc: _allDocuments[index].monHoc,
+            maMon: _allDocuments[index].maMon,
             duongDan: _allDocuments[index].duongDan,
             moTa: _allDocuments[index].moTa,
             yeuThich: !currentStatus,
@@ -328,7 +328,7 @@ class _DocumentsPageState extends State<DocumentsPage>
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      document.monHoc,
+                      document.maMon,
                       style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.primary,
@@ -372,7 +372,7 @@ class _DocumentsPageState extends State<DocumentsPage>
   Widget _buildDocumentThumbnail(TaiLieuEntity document) {
     // Tạo màu dựa trên môn học
     Color backgroundColor;
-    switch (document.monHoc) {
+    switch (document.maMon) {
       case 'MH001':
         backgroundColor = const Color(0xFFFF9800);
         break;

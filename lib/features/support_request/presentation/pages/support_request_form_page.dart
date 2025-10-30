@@ -84,6 +84,7 @@ class _SupportRequestFormPageState extends State<SupportRequestFormPage> {
         noiDung: noiDung,
         ngayGui: DateTime.now(),
         trangThaiPhanHoi: 'Chưa phản hồi',
+        maSV: _maSinhVienController.text,
       );
 
       // Gửi yêu cầu
