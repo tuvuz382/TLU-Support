@@ -6,6 +6,9 @@ import '../../../profile/data/repositories/student_profile_repository_impl.dart'
 import '../../../profile/data/datasources/student_profile_remote_datasource.dart';
 import '../../../profile/domain/usecases/get_current_student_profile_usecase.dart';
 import '../../../data_generator/domain/entities/sinh_vien_entity.dart';
+import '../../data/datasources/scholarship_remote_datasource.dart';
+import '../../data/repositories/scholarship_repository_impl.dart';
+import '../../domain/usecases/register_scholarship_usecase.dart';
 
 class ScholarshipRegistrationPage extends StatefulWidget {
   final String? scholarshipId;
@@ -31,6 +34,7 @@ class _ScholarshipRegistrationPageState extends State<ScholarshipRegistrationPag
   final _gpaController = TextEditingController();
   
   late final GetCurrentStudentProfileUseCase _getProfileUseCase;
+  late final RegisterScholarshipUseCase _registerScholarshipUseCase;
   DateTime? _selectedDate;
   bool _isLoading = true;
   bool _isSubmitting = false;
@@ -42,6 +46,11 @@ class _ScholarshipRegistrationPageState extends State<ScholarshipRegistrationPag
     final dataSource = StudentProfileRemoteDataSource();
     final repository = StudentProfileRepositoryImpl(remoteDataSource: dataSource);
     _getProfileUseCase = GetCurrentStudentProfileUseCase(repository);
+
+    // Scholarship DI
+    final scholarshipRemote = ScholarshipRemoteDataSource();
+    final scholarshipRepo = ScholarshipRepositoryImpl(remoteDataSource: scholarshipRemote);
+    _registerScholarshipUseCase = RegisterScholarshipUseCase(scholarshipRepo);
     _loadStudentProfile();
   }
 
@@ -103,7 +112,13 @@ class _ScholarshipRegistrationPageState extends State<ScholarshipRegistrationPag
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go(AppRoutes.scholarshipList);
+              }
+            },
           ),
           title: const Text(
             'Học bổng',
@@ -125,7 +140,13 @@ class _ScholarshipRegistrationPageState extends State<ScholarshipRegistrationPag
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go(AppRoutes.scholarshipList);
+            }
+          },
         ),
         title: const Text(
           'Học bổng',
@@ -426,16 +447,19 @@ class _ScholarshipRegistrationPageState extends State<ScholarshipRegistrationPag
     });
 
     try {
-      // TODO: Gọi API đăng ký học bổng thực tế
-      // Hiện tại chỉ simulate
-      await Future.delayed(const Duration(seconds: 2));
+      // Thực hiện đăng ký học bổng thực tế
+      if (widget.scholarshipId == null || widget.scholarshipId!.isEmpty) {
+        throw Exception('Thiếu mã học bổng');
+      }
+
+      final registrationId = await _registerScholarshipUseCase(widget.scholarshipId!);
 
       if (mounted) {
         setState(() {
           _isSubmitting = false;
         });
 
-        // Navigate to registration info page
+        // Navigate to registration info page (giữ nguyên UX hiện tại)
         context.go(AppRoutes.scholarshipRegistrationInfo, extra: {
           'scholarshipId': widget.scholarshipId,
           'scholarshipTitle': widget.scholarshipTitle ?? 'Học bổng',
@@ -446,6 +470,7 @@ class _ScholarshipRegistrationPageState extends State<ScholarshipRegistrationPag
           'class': _classController.text,
           'major': _majorController.text,
           'gpa': _gpaController.text,
+          'registrationId': registrationId,
         });
       }
     } catch (e) {
