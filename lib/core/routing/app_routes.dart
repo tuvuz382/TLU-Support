@@ -20,4 +20,6 @@ class AppRoutes {
   static const String gpa = '/gpa';
   static const String teacherList = '/teacher-list';
   static const String teacherDetail = '/teacher-detail';
+  static const String curriculum = '/curriculum';
+  static const String subjectDetail = '/subject-detail';
 }
