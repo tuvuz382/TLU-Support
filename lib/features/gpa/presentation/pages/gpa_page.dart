@@ -6,12 +6,13 @@ import '../../../data_generator/domain/entities/sinh_vien_entity.dart';
 import '../../../profile/data/repositories/student_profile_repository_impl.dart';
 import '../../../profile/data/datasources/student_profile_remote_datasource.dart';
 import '../../../profile/domain/usecases/get_current_student_profile_usecase.dart';
-import '../../domain/repositories/gpa_repository.dart';
 import '../../data/repositories/gpa_repository_impl.dart';
 import '../../data/datasources/firebase_gpa_datasource.dart';
 import '../../domain/usecases/calculate_gpa_usecase.dart';
 import '../../domain/usecases/calculate_gpa_summary_usecase.dart';
 import '../../domain/entities/gpa_summary_entity.dart';
+import '../../domain/usecases/get_grades_by_student_usecase.dart';
+import '../../domain/usecases/get_all_subjects_usecase.dart';
 
 class GPAPage extends StatefulWidget {
   const GPAPage({super.key});
@@ -22,10 +23,11 @@ class GPAPage extends StatefulWidget {
 
 class _GPAPageState extends State<GPAPage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late GPARepository _repository;
   late GetCurrentStudentProfileUseCase _getProfileUseCase;
   late CalculateGPAUseCase _calculateGPAUseCase;
   late CalculateGPASummaryUseCase _calculateGPASummaryUseCase;
+  late GetGradesByStudentUseCase _getGradesByStudentUseCase;
+  late GetAllSubjectsUseCase _getAllSubjectsUseCase;
 
   SinhVienEntity? _currentStudent;
   List<BangDiemEntity> _allGrades = [];
@@ -45,17 +47,21 @@ class _GPAPageState extends State<GPAPage> with SingleTickerProviderStateMixin {
     _tabController = TabController(length: 2, vsync: this);
 
     // Dependency Injection setup
-    _repository = GPARepositoryImpl(FirebaseGPADataSource());
     final profileDataSource = StudentProfileRemoteDataSource();
     final profileRepository =
         StudentProfileRepositoryImpl(remoteDataSource: profileDataSource);
     _getProfileUseCase = GetCurrentStudentProfileUseCase(profileRepository);
-    
+
     // Initialize Use Cases
     _calculateGPAUseCase = CalculateGPAUseCase();
     _calculateGPASummaryUseCase = CalculateGPASummaryUseCase(
       calculateGPAUseCase: _calculateGPAUseCase,
     );
+
+    // Inject repo -> usecases
+    final gpaRepo = GPARepositoryImpl(FirebaseGPADataSource());
+    _getGradesByStudentUseCase = GetGradesByStudentUseCase(gpaRepo);
+    _getAllSubjectsUseCase = GetAllSubjectsUseCase(gpaRepo);
 
     _loadData();
   }
@@ -73,7 +79,6 @@ class _GPAPageState extends State<GPAPage> with SingleTickerProviderStateMixin {
     });
 
     try {
-      // Lấy thông tin sinh viên hiện tại
       final studentProfile = await _getProfileUseCase();
 
       if (studentProfile == null) {
@@ -89,16 +94,15 @@ class _GPAPageState extends State<GPAPage> with SingleTickerProviderStateMixin {
         _currentStudent = studentProfile;
       });
 
-      // Lấy dữ liệu bảng điểm và môn học
+      // Lấy dữ liệu bảng điểm và môn học qua UC
       final futures = await Future.wait([
-        _repository.getGradesByStudent(studentProfile.maSV),
-        _repository.getAllSubjects(),
+        _getGradesByStudentUseCase(studentProfile.maSV),
+        _getAllSubjectsUseCase(),
       ]);
 
       final allGrades = futures[0] as List<BangDiemEntity>;
       final subjects = futures[1] as List<MonHocEntity>;
 
-      // Lấy danh sách năm học có dữ liệu
       final years = allGrades.map((g) => g.namHoc).toSet().toList()..sort();
       if (years.isNotEmpty && _selectedNamHoc == null) {
         _selectedNamHoc = years.last.toString();
