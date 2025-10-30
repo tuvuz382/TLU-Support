@@ -6,9 +6,7 @@ class LichHocEntity extends Equatable {
   final DateTime ngayHoc;
   final String tietHoc;
   final String phongHoc;
-  final String giangVienPhuTrach;
   final String lop; // Thêm lớp học theo UML
-  final String nganhHoc; // Thêm ngành học theo UML
 
   const LichHocEntity({
     required this.maLich,
@@ -16,9 +14,7 @@ class LichHocEntity extends Equatable {
     required this.ngayHoc,
     required this.tietHoc,
     required this.phongHoc,
-    required this.giangVienPhuTrach,
     required this.lop,
-    required this.nganhHoc,
   });
 
   Map<String, dynamic> toFirestore() {
@@ -28,9 +24,7 @@ class LichHocEntity extends Equatable {
       'ngayHoc': ngayHoc.toIso8601String(),
       'tietHoc': tietHoc,
       'phongHoc': phongHoc,
-      'giangVienPhuTrach': giangVienPhuTrach,
       'lop': lop,
-      'nganhHoc': nganhHoc,
     };
   }
 
@@ -41,9 +35,7 @@ class LichHocEntity extends Equatable {
       ngayHoc: DateTime.parse(data['ngayHoc'] ?? DateTime.now().toIso8601String()),
       tietHoc: data['tietHoc'] ?? '',
       phongHoc: data['phongHoc'] ?? '',
-      giangVienPhuTrach: data['giangVienPhuTrach'] ?? '',
       lop: data['lop'] ?? '',
-      nganhHoc: data['nganhHoc'] ?? '',
     );
   }
 
@@ -54,9 +46,7 @@ class LichHocEntity extends Equatable {
         ngayHoc,
         tietHoc,
         phongHoc,
-        giangVienPhuTrach,
         lop,
-        nganhHoc,
       ];
 }
 

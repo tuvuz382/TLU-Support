@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 class TaiLieuEntity extends Equatable {
   final String maTL;
   final String tenTL;
-  final String monHoc;
+  final String maMon;
   final String duongDan;
   final String moTa;
   final bool yeuThich;
@@ -11,7 +11,7 @@ class TaiLieuEntity extends Equatable {
   const TaiLieuEntity({
     required this.maTL,
     required this.tenTL,
-    required this.monHoc,
+    required this.maMon,
     required this.duongDan,
     required this.moTa,
     required this.yeuThich,
@@ -21,7 +21,7 @@ class TaiLieuEntity extends Equatable {
     return {
       'maTL': maTL,
       'tenTL': tenTL,
-      'monHoc': monHoc,
+      'maMon': maMon,
       'duongDan': duongDan,
       'moTa': moTa,
       'yeuThich': yeuThich,
@@ -32,7 +32,7 @@ class TaiLieuEntity extends Equatable {
     return TaiLieuEntity(
       maTL: data['maTL'] ?? '',
       tenTL: data['tenTL'] ?? '',
-      monHoc: data['monHoc'] ?? '',
+      maMon: data['maMon'] ?? '',
       duongDan: data['duongDan'] ?? '',
       moTa: data['moTa'] ?? '',
       yeuThich: data['yeuThich'] ?? false,
@@ -43,7 +43,7 @@ class TaiLieuEntity extends Equatable {
   List<Object?> get props => [
         maTL,
         tenTL,
-        monHoc,
+        maMon,
         duongDan,
         moTa,
         yeuThich,

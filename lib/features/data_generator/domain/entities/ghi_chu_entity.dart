@@ -4,13 +4,13 @@ class GhiChuEntity extends Equatable {
   final String maGhiChu;
   final String noiDung;
   final DateTime ngayTao;
-  final String monHoc;
+  final String tieuDe;
 
   const GhiChuEntity({
     required this.maGhiChu,
     required this.noiDung,
     required this.ngayTao,
-    required this.monHoc,
+    required this.tieuDe,
   });
 
   Map<String, dynamic> toFirestore() {
@@ -18,7 +18,7 @@ class GhiChuEntity extends Equatable {
       'maGhiChu': maGhiChu,
       'noiDung': noiDung,
       'ngayTao': ngayTao.toIso8601String(),
-      'monHoc': monHoc,
+      'tieuDe': tieuDe,
     };
   }
 
@@ -27,7 +27,7 @@ class GhiChuEntity extends Equatable {
       maGhiChu: data['maGhiChu'] ?? '',
       noiDung: data['noiDung'] ?? '',
       ngayTao: DateTime.parse(data['ngayTao'] ?? DateTime.now().toIso8601String()),
-      monHoc: data['monHoc'] ?? '',
+      tieuDe: data['tieuDe'] ?? '',
     );
   }
 
@@ -36,7 +36,7 @@ class GhiChuEntity extends Equatable {
         maGhiChu,
         noiDung,
         ngayTao,
-        monHoc,
+        tieuDe,
       ];
 }
 

@@ -45,6 +45,7 @@ class CalculateGPAUseCase {
           tenMon: 'Không xác định',
           soTinChi: 3, // Mặc định 3 tín chỉ
           moTa: '',
+          chuyenNganh: '',
         ),
       );
 

@@ -152,6 +152,7 @@ class _GPAPageState extends State<GPAPage> with SingleTickerProviderStateMixin {
         tenMon: 'Không xác định',
         soTinChi: 3,
         moTa: '',
+        chuyenNganh: '',
       ),
     );
     return subject.tenMon;
@@ -166,6 +167,7 @@ class _GPAPageState extends State<GPAPage> with SingleTickerProviderStateMixin {
         tenMon: 'Không xác định',
         soTinChi: 3,
         moTa: '',
+        chuyenNganh: '',
       ),
     );
     return subject.soTinChi;

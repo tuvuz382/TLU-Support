@@ -6,6 +6,6 @@ class GetAvailableSubjectsUseCase {
   /// [documents] - List of documents to extract subjects from
   /// Returns sorted list of unique subjects
   List<String> call(List<TaiLieuEntity> documents) {
-    return documents.map((doc) => doc.monHoc).toSet().toList()..sort();
+    return documents.map((doc) => doc.maMon).toSet().toList()..sort();
   }
 }

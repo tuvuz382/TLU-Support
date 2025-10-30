@@ -5,12 +5,14 @@ class LienHeEntity extends Equatable {
   final String noiDung;
   final DateTime ngayGui;
   final String trangThaiPhanHoi;
+  final String maSV;
 
   const LienHeEntity({
     required this.maLienHe,
     required this.noiDung,
     required this.ngayGui,
     required this.trangThaiPhanHoi,
+    required this.maSV,
   });
 
   Map<String, dynamic> toFirestore() {
@@ -19,6 +21,7 @@ class LienHeEntity extends Equatable {
       'noiDung': noiDung,
       'ngayGui': ngayGui.toIso8601String(),
       'trangThaiPhanHoi': trangThaiPhanHoi,
+      'maSV': maSV,
     };
   }
 
@@ -30,9 +33,10 @@ class LienHeEntity extends Equatable {
         data['ngayGui'] ?? DateTime.now().toIso8601String(),
       ),
       trangThaiPhanHoi: data['trangThaiPhanHoi'] ?? '',
+      maSV: data['maSV'] ?? '',
     );
   }
 
   @override
-  List<Object?> get props => [maLienHe, noiDung, ngayGui, trangThaiPhanHoi];
+  List<Object?> get props => [maLienHe, noiDung, ngayGui, trangThaiPhanHoi, maSV];
 }
