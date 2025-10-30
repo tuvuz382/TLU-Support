@@ -29,7 +29,6 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   SinhVienEntity? _studentProfile;
   bool _isLoading = false;
   DateTime? _selectedDate;
-  String? _pendingAvatarUrl;
 
   @override
   void initState() {
@@ -105,11 +104,6 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     }
     setState(() { _isLoading = true; });
     try {
-      String? newAvatar = _studentProfile!.anhDaiDien;
-      if (_pendingAvatarUrl != null && _pendingAvatarUrl != _studentProfile!.anhDaiDien) {
-        await _updateImageUseCase(_pendingAvatarUrl!);
-        newAvatar = _pendingAvatarUrl!;
-      }
       final updated = SinhVienEntity(
         maSV: _studentProfile!.maSV,
         hoTen: _fullNameController.text.trim(),
@@ -120,13 +114,12 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         nganhHoc: _majorController.text.trim(),
         diemGPA: _studentProfile!.diemGPA,
         hocBongDangKy: _studentProfile!.hocBongDangKy,
-        anhDaiDien: newAvatar,
+        anhDaiDien: _studentProfile!.anhDaiDien,
       );
       await _updateProfileUseCase(updated);
       if (!mounted) return;
       setState(() {
         _studentProfile = updated;
-        _pendingAvatarUrl = null;
         _isLoading = false;
         _populateFields(updated);
       });
@@ -202,7 +195,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
             nganhHoc: _studentProfile!.nganhHoc,
             diemGPA: _studentProfile!.diemGPA,
             hocBongDangKy: _studentProfile!.hocBongDangKy,
-            anhDaiDien: url,
+            anhDaiDien: url, // cập nhật ngay
           );
           _populateFields(_studentProfile!);
           _isLoading = false;
@@ -274,7 +267,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                             shape: BoxShape.circle,
                             color: AppColors.primary,
                           ),
-                          child: _studentProfile?.anhDaiDien != null
+                          child: (_studentProfile?.anhDaiDien != null && _studentProfile!.anhDaiDien!.isNotEmpty)
                               ? ClipOval(
                                   child: Image.network(
                                     _studentProfile!.anhDaiDien!,
