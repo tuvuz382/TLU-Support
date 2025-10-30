@@ -4,6 +4,7 @@ import '../../../data_generator/domain/entities/lien_he_entity.dart';
 import '../../data/datasources/firebase_support_request_datasource.dart';
 import '../../data/repositories/support_request_repository_impl.dart';
 import '../../domain/repositories/support_request_repository.dart';
+import '../../domain/usecases/get_processed_requests_usecase.dart';
 import '../widgets/support_request_card.dart';
 
 class ProcessedRequestsPage extends StatefulWidget {
@@ -15,6 +16,7 @@ class ProcessedRequestsPage extends StatefulWidget {
 
 class _ProcessedRequestsPageState extends State<ProcessedRequestsPage> {
   late SupportRequestRepository _repository;
+  late GetProcessedRequestsUseCase _getProcessedRequestsUseCase;
   List<LienHeEntity> _processedRequests = [];
   bool _isLoading = true;
   String? _errorMessage;
@@ -25,6 +27,7 @@ class _ProcessedRequestsPageState extends State<ProcessedRequestsPage> {
     _repository = SupportRequestRepositoryImpl(
       FirebaseSupportRequestDataSource(),
     );
+    _getProcessedRequestsUseCase = GetProcessedRequestsUseCase(_repository);
     _loadProcessedRequests();
   }
 
@@ -35,7 +38,7 @@ class _ProcessedRequestsPageState extends State<ProcessedRequestsPage> {
     });
 
     try {
-      final requests = await _repository.getProcessedRequests();
+      final requests = await _getProcessedRequestsUseCase.call();
       setState(() {
         _processedRequests = requests;
         _isLoading = false;

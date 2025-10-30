@@ -6,6 +6,8 @@ import '../../data/datasources/firebase_documents_datasource.dart';
 import '../../data/repositories/documents_repository_impl.dart';
 import '../../domain/repositories/documents_repository.dart';
 import '../../domain/usecases/search_documents_usecase.dart';
+import '../../domain/usecases/get_all_documents_usecase.dart';
+import '../../domain/usecases/toggle_favorite_usecase.dart';
 import '../widgets/filter_dialog.dart';
 
 class DocumentsPage extends StatefulWidget {
@@ -20,6 +22,8 @@ class _DocumentsPageState extends State<DocumentsPage>
   late TabController _tabController;
   late DocumentsRepository _repository;
   late SearchDocumentsUseCase _searchUseCase;
+  late GetAllDocumentsUseCase _getAllDocumentsUseCase;
+  late ToggleFavoriteUseCase _toggleFavoriteUseCase;
 
   List<TaiLieuEntity> _allDocuments = [];
   List<TaiLieuEntity> _favoriteDocuments = [];
@@ -36,6 +40,8 @@ class _DocumentsPageState extends State<DocumentsPage>
     _tabController = TabController(length: 2, vsync: this);
     _repository = DocumentsRepositoryImpl(FirebaseDocumentsDataSource());
     _searchUseCase = SearchDocumentsUseCase(_repository);
+    _getAllDocumentsUseCase = GetAllDocumentsUseCase(_repository);
+    _toggleFavoriteUseCase = ToggleFavoriteUseCase(_repository);
     _loadDocuments();
   }
 
@@ -53,7 +59,7 @@ class _DocumentsPageState extends State<DocumentsPage>
     });
 
     try {
-      final documents = await _repository.getAllDocuments();
+      final documents = await _getAllDocumentsUseCase.call();
       setState(() {
         _allDocuments = documents;
         _favoriteDocuments = documents.where((doc) => doc.yeuThich).toList();
@@ -89,7 +95,7 @@ class _DocumentsPageState extends State<DocumentsPage>
       });
 
       // Update Firestore
-      await _repository.toggleFavorite(documentId, !currentStatus);
+      await _toggleFavoriteUseCase.call(documentId, !currentStatus);
     } catch (e) {
       // Nếu lỗi, revert lại
       _loadDocuments();
