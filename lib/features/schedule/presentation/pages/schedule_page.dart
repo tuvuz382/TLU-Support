@@ -4,7 +4,6 @@ import '/core/presentation/theme/app_colors.dart';
 import '../../../data_generator/domain/entities/lich_hoc_entity.dart';
 import '../../../data_generator/domain/entities/mon_hoc_entity.dart';
 import '../../../data_generator/domain/entities/sinh_vien_entity.dart';
-import '../../domain/repositories/schedule_repository.dart';
 import '../../data/repositories/schedule_repository_impl.dart';
 import '../../data/datasources/firebase_schedule_datasource.dart';
 import '../../../profile/data/repositories/student_profile_repository_impl.dart';
@@ -12,6 +11,8 @@ import '../../../profile/data/datasources/student_profile_remote_datasource.dart
 import '../../../profile/domain/usecases/get_current_student_profile_usecase.dart';
 import '../../../data_generator/domain/entities/giang_vien_entity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../domain/usecases/get_all_schedules_usecase.dart';
+import '../../domain/usecases/get_all_subjects_usecase.dart';
 
 class SchedulePage extends StatefulWidget {
   const SchedulePage({super.key});
@@ -23,7 +24,8 @@ class SchedulePage extends StatefulWidget {
 class _SchedulePageState extends State<SchedulePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late ScheduleRepository _repository;
+  late GetAllSchedulesUseCase _getAllSchedulesUseCase;
+  late GetAllSubjectsUseCase _getAllSubjectsUseCase;
   late GetCurrentStudentProfileUseCase _getProfileUseCase;
   
   List<LichHocEntity> _allSchedules = [];
@@ -38,13 +40,13 @@ class _SchedulePageState extends State<SchedulePage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    
-    // Dependency Injection setup
-    _repository = ScheduleRepositoryImpl(FirebaseScheduleDataSource());
+    // Inject usecases
+    final repo = ScheduleRepositoryImpl(FirebaseScheduleDataSource());
+    _getAllSchedulesUseCase = GetAllSchedulesUseCase(repo);
+    _getAllSubjectsUseCase = GetAllSubjectsUseCase(repo);
     final profileDataSource = StudentProfileRemoteDataSource();
     final profileRepository = StudentProfileRepositoryImpl(remoteDataSource: profileDataSource);
     _getProfileUseCase = GetCurrentStudentProfileUseCase(profileRepository);
-    
     _loadData();
   }
 
@@ -61,9 +63,7 @@ class _SchedulePageState extends State<SchedulePage>
     });
 
     try {
-      // Lấy thông tin sinh viên hiện tại
       final studentProfile = await _getProfileUseCase();
-      
       if (studentProfile == null) {
         setState(() {
           _errorMessage = 'Không tìm thấy thông tin sinh viên. Vui lòng cập nhật profile.';
@@ -71,30 +71,31 @@ class _SchedulePageState extends State<SchedulePage>
         });
         return;
       }
-
       setState(() {
         _currentStudent = studentProfile;
       });
 
-      // Lấy dữ liệu lịch học và môn học
+      // Lấy dữ liệu lịch học, môn học, giảng viên
       final futures = await Future.wait([
-        _repository.getAllSchedules(),
-        _repository.getAllSubjects(),
+        _getAllSchedulesUseCase(),
+        _getAllSubjectsUseCase(),
         FirebaseFirestore.instance.collection('giangVien').get(),
       ]);
 
       final allSchedules = futures[0] as List<LichHocEntity>;
       final subjects = futures[1] as List<MonHocEntity>;
       final lecturersSnap = futures[2] as QuerySnapshot;
-      final lecturers = lecturersSnap.docs.map((doc) => GiangVienEntity.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
-
-      // Lọc lịch học theo lớp của sinh viên
-      final filteredSchedules = allSchedules
-          .where((schedule) => schedule.lop == studentProfile.lop)
+      final lecturers = lecturersSnap.docs
+          .map((doc) => GiangVienEntity.fromFirestore(doc.data() as Map<String, dynamic>))
           .toList();
 
-      // Lấy lịch học hôm nay theo lớp
-      final todaySchedules = await _repository.getTodaySchedulesByClass(studentProfile.lop);
+      // Lọc lịch học theo lớp của sinh viên
+      final filteredSchedules = allSchedules.where((schedule) => schedule.lop == studentProfile.lop).toList();
+
+      // Lịch học hôm nay
+      final today = DateTime.now();
+      final todaySchedules = filteredSchedules.where((e) =>
+        e.ngayHoc.year == today.year && e.ngayHoc.month == today.month && e.ngayHoc.day == today.day).toList();
 
       setState(() {
         _allSchedules = filteredSchedules;
