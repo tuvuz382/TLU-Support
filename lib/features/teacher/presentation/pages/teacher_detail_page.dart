@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '/core/presentation/theme/app_colors.dart';
 import '../../../data_generator/domain/entities/giang_vien_entity.dart';
+import '../../../data_generator/domain/entities/danh_gia_entity.dart';
+import '../../data/datasources/firebase_teacher_datasource.dart';
+import '../../data/repositories/teacher_repository_impl.dart';
+import '../../domain/usecases/get_teacher_reviews_usecase.dart';
 
 class TeacherDetailPage extends StatelessWidget {
   final GiangVienEntity teacher;
@@ -10,6 +14,10 @@ class TeacherDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final reviewsUC = GetTeacherReviewsUseCase(
+      TeacherRepositoryImpl(FirebaseTeacherDataSource()),
+    );
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -92,6 +100,14 @@ class TeacherDetailPage extends StatelessWidget {
 
               // Contact Section
               _buildContactSection(),
+
+              const SizedBox(height: 24),
+
+              // Reviews Section
+              _TeacherReviewsSection(
+                maGV: teacher.maGV,
+                reviewsUC: reviewsUC,
+              ),
             ],
           ),
         ),
@@ -246,9 +262,7 @@ class TeacherDetailPage extends StatelessWidget {
             icon: Icons.email_outlined,
             label: 'Email',
             value: teacher.email,
-            onTap: () {
-              // Có thể mở email client
-            },
+            onTap: () {},
           ),
 
           const SizedBox(height: 12),
@@ -258,9 +272,7 @@ class TeacherDetailPage extends StatelessWidget {
             icon: Icons.phone_outlined,
             label: 'Số điện thoại',
             value: teacher.soDT,
-            onTap: () {
-              // Có thể gọi điện
-            },
+            onTap: () {},
           ),
         ],
       ),
@@ -312,6 +324,94 @@ class TeacherDetailPage extends StatelessWidget {
             Icon(Icons.chevron_right, color: Colors.grey[400]),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _TeacherReviewsSection extends StatelessWidget {
+  final String maGV;
+  final GetTeacherReviewsUseCase reviewsUC;
+  const _TeacherReviewsSection({required this.maGV, required this.reviewsUC});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<DanhGiaEntity>>(
+      future: reviewsUC(maGV),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 24),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+        if (snapshot.hasError) {
+          return Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text('Lỗi khi tải đánh giá: ${snapshot.error}',
+                style: const TextStyle(color: Colors.red)),
+          );
+        }
+        final reviews = snapshot.data ?? const <DanhGiaEntity>[];
+        if (reviews.isEmpty) {
+          return Container(
+            margin: const EdgeInsets.only(top: 8),
+            child: const Text('Chưa có đánh giá.'),
+          );
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 8),
+            const Text(
+              'Đánh giá',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            ...reviews.map((r) => _ReviewTile(review: r)),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _ReviewTile extends StatelessWidget {
+  final DanhGiaEntity review;
+  const _ReviewTile({required this.review});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.grey[300]!),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.person_outline, color: AppColors.primary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  review.noiDung,
+                  style: const TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Ngày: ${review.ngayDanhGia.day}/${review.ngayDanhGia.month}/${review.ngayDanhGia.year}',
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../data/datasources/firebase_notes_datasource.dart';
 import '../../data/repositories/notes_repository_impl.dart';
 import '../../domain/usecases/get_all_notes_usecase.dart';
@@ -194,7 +195,19 @@ class _NotesPageState extends State<NotesPage> {
     final list = _searchController.text.isEmpty ? _notes : _filtered;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Ghi chú')),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+           onPressed: () => context.go('/'),
+        ),
+        title: const Text('Ghi chú'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined, color: Colors.white),
+            onPressed: () => context.go('/notifications'),
+          ),
+        ],
+      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : Column(
