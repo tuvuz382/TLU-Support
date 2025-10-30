@@ -22,8 +22,7 @@ import '../../features/documents/presentation/pages/document_detail_page.dart';
 // Features - Notifications
 import '../../features/notifications/presentation/pages/notifications_page.dart';
 import '../../features/notifications/presentation/pages/notification_detail_page.dart';
-// Import NotificationItem from notifications_page for routing
-// Note: NotificationItem is defined in notifications_page.dart
+import '../../features/notifications/domain/entities/notification_item.dart';
 
 // Features - Scholarship
 import '../../features/scholarship/presentation/pages/scholarship_list_page.dart';

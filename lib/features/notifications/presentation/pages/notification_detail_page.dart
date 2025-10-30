@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'notifications_page.dart';
+import '../../domain/entities/notification_item.dart';
 
 class NotificationDetailPage extends StatelessWidget {
   final NotificationItem notification;
