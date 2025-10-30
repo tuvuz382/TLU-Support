@@ -159,7 +159,7 @@ class HomePage extends StatelessWidget {
                       context,
                       icon: Icons.school,
                       label: 'Chương trình đào tạo',
-                      onTap: () => context.go('/curriculum'),
+                      onTap: () => context.go(AppRoutes.curriculum),
                     ),
                     _buildGridItem(
                       context,

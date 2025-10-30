@@ -42,6 +42,9 @@ import '../../features/gpa/presentation/pages/gpa_page.dart';
 import '../../features/teacher/presentation/pages/teacher_list_page.dart';
 import '../../features/teacher/presentation/pages/teacher_detail_page.dart';
 
+// Features - Subject/Curriculum
+import '../../features/subject/presentation/pages/curriculum_page.dart';
+import '../../features/subject/presentation/pages/subject_detail_page.dart';
 // Layout
 import '../../core/presentation/layouts/main_layout.dart';
 
@@ -180,6 +183,17 @@ class AppGoRouter {
             builder: (context, state) {
               final teacher = state.extra;
               return TeacherDetailPage(teacher: teacher as dynamic);
+            },
+          ),
+          GoRoute(
+            path: AppRoutes.curriculum,
+            builder: (context, state) => const CurriculumPage(),
+          ),
+          GoRoute(
+            path: AppRoutes.subjectDetail,
+            builder: (context, state) {
+              final subject = state.extra;
+              return SubjectDetailPage(subject: subject as dynamic);
             },
           ),
         ],
