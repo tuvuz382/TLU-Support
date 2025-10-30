@@ -10,9 +10,11 @@ import '../../../profile/data/repositories/student_profile_repository_impl.dart'
 import '../../../profile/data/datasources/student_profile_remote_datasource.dart';
 import '../../../profile/domain/usecases/get_current_student_profile_usecase.dart';
 import '../../../data_generator/domain/entities/giang_vien_entity.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/usecases/get_all_schedules_usecase.dart';
 import '../../domain/usecases/get_all_subjects_usecase.dart';
+import '../../../teacher/domain/usecases/get_all_teachers_usecase.dart';
+import '../../../teacher/data/datasources/firebase_teacher_datasource.dart';
+import '../../../teacher/data/repositories/teacher_repository_impl.dart';
 
 class SchedulePage extends StatefulWidget {
   const SchedulePage({super.key});
@@ -27,6 +29,7 @@ class _SchedulePageState extends State<SchedulePage>
   late GetAllSchedulesUseCase _getAllSchedulesUseCase;
   late GetAllSubjectsUseCase _getAllSubjectsUseCase;
   late GetCurrentStudentProfileUseCase _getProfileUseCase;
+  late GetAllTeachersUseCase _getAllTeachersUseCase;
   
   List<LichHocEntity> _allSchedules = [];
   List<LichHocEntity> _todaySchedules = [];
@@ -44,6 +47,8 @@ class _SchedulePageState extends State<SchedulePage>
     final repo = ScheduleRepositoryImpl(FirebaseScheduleDataSource());
     _getAllSchedulesUseCase = GetAllSchedulesUseCase(repo);
     _getAllSubjectsUseCase = GetAllSubjectsUseCase(repo);
+    final teacherRepo = TeacherRepositoryImpl(FirebaseTeacherDataSource());
+    _getAllTeachersUseCase = GetAllTeachersUseCase(teacherRepo);
     final profileDataSource = StudentProfileRemoteDataSource();
     final profileRepository = StudentProfileRepositoryImpl(remoteDataSource: profileDataSource);
     _getProfileUseCase = GetCurrentStudentProfileUseCase(profileRepository);
@@ -79,15 +84,12 @@ class _SchedulePageState extends State<SchedulePage>
       final futures = await Future.wait([
         _getAllSchedulesUseCase(),
         _getAllSubjectsUseCase(),
-        FirebaseFirestore.instance.collection('giangVien').get(),
+        _getAllTeachersUseCase(),
       ]);
 
       final allSchedules = futures[0] as List<LichHocEntity>;
       final subjects = futures[1] as List<MonHocEntity>;
-      final lecturersSnap = futures[2] as QuerySnapshot;
-      final lecturers = lecturersSnap.docs
-          .map((doc) => GiangVienEntity.fromFirestore(doc.data() as Map<String, dynamic>))
-          .toList();
+      final lecturers = futures[2] as List<GiangVienEntity>;
 
       // Lọc lịch học theo lớp của sinh viên
       final filteredSchedules = allSchedules.where((schedule) => schedule.lop == studentProfile.lop).toList();
