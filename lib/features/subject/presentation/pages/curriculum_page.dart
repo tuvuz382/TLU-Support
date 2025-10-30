@@ -103,7 +103,7 @@ class _CurriculumPageState extends State<CurriculumPage> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+           onPressed: () => context.go('/'),
         ),
         title: const Text('Chương trình đào tạo'),
         actions: [

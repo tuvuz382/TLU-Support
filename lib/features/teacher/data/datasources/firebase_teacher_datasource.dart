@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../data_generator/domain/entities/giang_vien_entity.dart';
+import '../../../data_generator/domain/entities/danh_gia_entity.dart';
 
 class FirebaseTeacherDataSource {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -56,6 +57,22 @@ class FirebaseTeacherDataSource {
       }).toList();
     } catch (e) {
       throw Exception('Lỗi khi tìm kiếm giảng viên: $e');
+    }
+  }
+
+  Future<List<DanhGiaEntity>> getReviewsByTeacher(String maGV) async {
+    try {
+      final snapshot = await _firestore
+          .collection('danhGia')
+          .where('maGV', isEqualTo: maGV)
+          .get();
+      final list = snapshot.docs
+          .map((doc) => DanhGiaEntity.fromFirestore(doc.data()))
+          .toList();
+      list.sort((a, b) => b.ngayDanhGia.compareTo(a.ngayDanhGia));
+      return list;
+    } catch (e) {
+      throw Exception('Lỗi khi lấy đánh giá giảng viên: $e');
     }
   }
 }
