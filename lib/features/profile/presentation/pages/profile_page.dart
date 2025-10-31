@@ -198,9 +198,17 @@ class _ProfilePageState extends State<ProfilePage> {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Trang cá nhân'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          'Trang cá nhân',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
