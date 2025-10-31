@@ -27,5 +27,10 @@ class TeacherRepositoryImpl implements TeacherRepository {
   Future<List<DanhGiaEntity>> getReviewsByTeacher(String maGV) {
     return _dataSource.getReviewsByTeacher(maGV);
   }
+
+  @override
+  Future<void> addReview(DanhGiaEntity review) {
+    return _dataSource.addReview(review);
+  }
 }
 

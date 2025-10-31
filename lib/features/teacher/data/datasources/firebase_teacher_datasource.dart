@@ -75,5 +75,13 @@ class FirebaseTeacherDataSource {
       throw Exception('Lỗi khi lấy đánh giá giảng viên: $e');
     }
   }
+
+  Future<void> addReview(DanhGiaEntity review) async {
+    try {
+      await _firestore.collection('danhGia').add(review.toFirestore());
+    } catch (e) {
+      throw Exception('Lỗi khi thêm đánh giá: $e');
+    }
+  }
 }
 
