@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import '/core/presentation/theme/app_colors.dart';
 import '../../../data_generator/domain/entities/lien_he_entity.dart';
-import '../../data/datasources/firebase_support_request_datasource.dart';
-import '../../data/repositories/support_request_repository_impl.dart';
 import '../../domain/repositories/support_request_repository.dart';
 import '../../domain/usecases/get_pending_requests_usecase.dart';
 import '../widgets/support_request_card.dart';
 
 class PendingRequestsPage extends StatefulWidget {
-  const PendingRequestsPage({super.key});
+  final SupportRequestRepository repository;
+
+  const PendingRequestsPage({super.key, required this.repository});
 
   @override
   State<PendingRequestsPage> createState() => _PendingRequestsPageState();
@@ -24,9 +24,7 @@ class _PendingRequestsPageState extends State<PendingRequestsPage> {
   @override
   void initState() {
     super.initState();
-    _repository = SupportRequestRepositoryImpl(
-      FirebaseSupportRequestDataSource(),
-    );
+    _repository = widget.repository;
     _getPendingRequestsUseCase = GetPendingRequestsUseCase(_repository);
     _loadPendingRequests();
   }

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import '/core/presentation/theme/app_colors.dart';
-import '../../data/datasources/firebase_support_request_datasource.dart';
-import '../../data/repositories/support_request_repository_impl.dart';
 import '../../domain/repositories/support_request_repository.dart';
 import '../../domain/usecases/submit_support_request_usecase.dart';
 
 class SupportRequestFormPage extends StatefulWidget {
-  const SupportRequestFormPage({super.key});
+  final SupportRequestRepository repository;
+
+  const SupportRequestFormPage({super.key, required this.repository});
 
   @override
   State<SupportRequestFormPage> createState() => _SupportRequestFormPageState();
@@ -37,9 +37,7 @@ class _SupportRequestFormPageState extends State<SupportRequestFormPage> {
   @override
   void initState() {
     super.initState();
-    _repository = SupportRequestRepositoryImpl(
-      FirebaseSupportRequestDataSource(),
-    );
+    _repository = widget.repository;
     _submitSupportRequestUseCase = SubmitSupportRequestUseCase(_repository);
   }
 

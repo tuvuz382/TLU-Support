@@ -1,18 +1,36 @@
 import '../../../data_generator/domain/entities/tai_lieu_entity.dart';
+import '../repositories/documents_repository.dart';
 
 /// Use case to filter documents by various criteria
+/// Follows Clean Architecture: gets data from Repository
 class FilterDocumentsUseCase {
+  final DocumentsRepository _repository;
+
+  FilterDocumentsUseCase(this._repository);
+
   /// Execute the use case
-  /// [documents] - List of documents to filter
+  /// [searchQuery] - Optional search query to filter documents first
   /// [subject] - Subject filter (optional)
   /// [favoriteStatus] - Favorite status filter (optional)
   /// [sortBy] - Sort criteria (optional)
-  List<TaiLieuEntity> call({
-    required List<TaiLieuEntity> documents,
+  Future<List<TaiLieuEntity>> call({
+    String? searchQuery,
     String? subject,
     bool? favoriteStatus,
     String? sortBy,
-  }) {
+  }) async {
+    // Get documents from repository (following Clean Architecture)
+    List<TaiLieuEntity> documents;
+
+    if (searchQuery != null && searchQuery.trim().isNotEmpty) {
+      // If search query provided, search first
+      documents = await _repository.searchDocuments(searchQuery.trim());
+    } else {
+      // Otherwise get all documents
+      documents = await _repository.getAllDocuments();
+    }
+
+    // Start filtering from the documents obtained from repository
     List<TaiLieuEntity> filteredDocuments = List.from(documents);
 
     // Filter by subject
