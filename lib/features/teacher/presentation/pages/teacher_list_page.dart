@@ -106,21 +106,15 @@ class _TeacherListPageState extends State<TeacherListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => context.go('/'),
         ),
-        title: const Text(
-          'Đội ngũ giảng viên',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title: const Text('Đội ngũ giảng viên', style: TextStyle(color: Colors.black),),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: Colors.white),
+            icon: const Icon(Icons.notifications_outlined, color: Colors.black),
             onPressed: () => context.go('/notifications'),
           ),
         ],
