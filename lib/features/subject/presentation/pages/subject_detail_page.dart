@@ -293,8 +293,8 @@ class _SubjectTeachers extends StatelessWidget {
       );
     }
 
-    final ds = FirebaseTeacherDataSource();
-    final repo = TeacherRepositoryImpl(ds);
+    // Tạo UseCase một lần
+    final repo = TeacherRepositoryImpl(FirebaseTeacherDataSource());
     final useCase = GetTeacherDetailUseCase(repo);
 
     return FutureBuilder<GiangVienEntity?>(

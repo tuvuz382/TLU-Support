@@ -4,7 +4,7 @@ import '/core/presentation/theme/app_colors.dart';
 import '../../../data_generator/domain/entities/giang_vien_entity.dart';
 import '../../data/datasources/firebase_teacher_datasource.dart';
 import '../../data/repositories/teacher_repository_impl.dart';
-import '../../domain/repositories/teacher_repository.dart';
+import '../../domain/usecases/get_all_teachers_usecase.dart';
 
 class TeacherListPage extends StatefulWidget {
   const TeacherListPage({super.key});
@@ -14,7 +14,7 @@ class TeacherListPage extends StatefulWidget {
 }
 
 class _TeacherListPageState extends State<TeacherListPage> {
-  late TeacherRepository _repository;
+  late final GetAllTeachersUseCase _getAllTeachersUC;
   List<GiangVienEntity> _allTeachers = [];
   List<GiangVienEntity> _filteredTeachers = [];
   bool _isLoading = true;
@@ -26,7 +26,8 @@ class _TeacherListPageState extends State<TeacherListPage> {
   @override
   void initState() {
     super.initState();
-    _repository = TeacherRepositoryImpl(FirebaseTeacherDataSource());
+    final repo = TeacherRepositoryImpl(FirebaseTeacherDataSource());
+    _getAllTeachersUC = GetAllTeachersUseCase(repo);
     _loadTeachers();
   }
 
@@ -37,7 +38,7 @@ class _TeacherListPageState extends State<TeacherListPage> {
     });
 
     try {
-      final teachers = await _repository.getAllTeachers();
+      final teachers = await _getAllTeachersUC();
       setState(() {
         _allTeachers = teachers;
         _filteredTeachers = teachers;
@@ -54,30 +55,6 @@ class _TeacherListPageState extends State<TeacherListPage> {
       setState(() {
         _errorMessage = e.toString();
         _isLoading = false;
-      });
-    }
-  }
-
-  void _onSearchChanged(String query) {
-    setState(() {
-      _searchQuery = query;
-      if (query.isEmpty) {
-        _filteredTeachers = _allTeachers;
-      } else {
-        _performSearch(query);
-      }
-    });
-  }
-
-  Future<void> _performSearch(String query) async {
-    try {
-      final results = await _repository.searchTeachers(query);
-      setState(() {
-        _filteredTeachers = results;
-      });
-    } catch (e) {
-      setState(() {
-        _filteredTeachers = [];
       });
     }
   }
