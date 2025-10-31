@@ -209,6 +209,12 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined, color: Colors.black),
+            onPressed: () => context.go('/notifications'),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
