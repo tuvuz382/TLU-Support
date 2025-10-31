@@ -60,11 +60,6 @@ class _NotesPageState extends State<NotesPage> {
     });
   }
 
-  Color _tagColor(String tag) {
-    if (tag == 'CNTT') return Colors.yellow;
-    if (tag == 'Đại Cương') return Colors.red;
-    return Colors.grey.shade300;
-  }
 
   Future<void> _openForm({GhiChuEntity? note}) async {
     final titleCtrl = TextEditingController(text: note?.tieuDe ?? 'CNTT');
@@ -131,7 +126,7 @@ class _NotesPageState extends State<NotesPage> {
                     if (mounted) Navigator.pop(context, true);
                   },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.yellow.shade400,
+              backgroundColor: Colors.blue.shade400,
               foregroundColor: Colors.black,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 9),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -259,20 +254,54 @@ class _NotesPageState extends State<NotesPage> {
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                     margin: const EdgeInsets.only(left: 6),
                                     decoration: BoxDecoration(
-                                      color: _tagColor(note.tieuDe),
+                                      color: Colors.yellow,
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: Text(
                                       note.tieuDe,
-                                      style: TextStyle(
-                                        color: _tagColor(note.tieuDe) == Colors.yellow ? Colors.black : Colors.white,
+                                      style: const TextStyle(
+                                        color: Colors.black,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ),
                               ],
                             ),
-                            subtitle: Text('Ngày: ${note.ngayTao.day}/${note.ngayTao.month}'),
+                            subtitle: Row(
+                              children: [
+                                Text('Ngày: ${note.ngayTao.day}/${note.ngayTao.month}'),
+                                const Spacer(),
+                                InkWell(
+                                  onTap: () => _openForm(note: note),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: const [
+                                        Icon(Icons.edit, color: Colors.blue, size: 18),
+                                        SizedBox(width: 4),
+                                        Text('Sửa', style: TextStyle(color: Colors.blue, fontSize: 12)),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                InkWell(
+                                  onTap: () => _confirmDelete(note),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: const [
+                                        Icon(Icons.delete, color: Colors.red, size: 18),
+                                        SizedBox(width: 4),
+                                        Text('Xóa', style: TextStyle(color: Colors.red, fontSize: 12)),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                             onTap: () => _openForm(note: note),
                           ),
                         ),
