@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '/core/presentation/theme/app_colors.dart';
 import '../../../data_generator/domain/entities/bang_diem_entity.dart';
 import '../../../data_generator/domain/entities/mon_hoc_entity.dart';
@@ -484,28 +485,52 @@ class _GPAPageState extends State<GPAPage> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => context.go('/'),
+        ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Tra cứu GPA'),
+            const Text(
+              'Tra cứu GPA',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             if (_currentStudent != null)
               Text(
                 'Mã SV: ${_currentStudent!.maSV}',
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.normal,
+                  color: Colors.black87,
                 ),
               ),
           ],
         ),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined, color: Colors.black),
+            onPressed: () => context.go('/notifications'),
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: Colors.white,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
+          labelColor: AppColors.primary,
+          unselectedLabelColor: Colors.grey,
+          indicatorColor: AppColors.primary,
+          indicatorWeight: 3,
+          labelStyle: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
           tabs: const [
             Tab(text: 'Bảng điểm'),
             Tab(text: 'Điểm tổng hợp'),
