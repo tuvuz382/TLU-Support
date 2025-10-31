@@ -96,13 +96,7 @@ class HomePage extends StatelessWidget {
                         // Action icons
                         Row(
                           children: [
-                            IconButton(
-                              icon: const Icon(
-                                Icons.search,
-                                color: Colors.white,
-                              ),
-                              onPressed: () {},
-                            ),
+                            
                             IconButton(
                               icon: const Icon(
                                 Icons.notifications,
