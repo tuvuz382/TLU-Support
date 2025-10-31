@@ -523,7 +523,8 @@ class _DocumentsPageState extends State<DocumentsPage>
     showDialog(
       context: context,
       builder: (context) => FilterDialog(
-        allDocuments: _isSearching ? _filteredDocuments : _allDocuments,
+        repository: _repository,
+        currentSearchQuery: _isSearching ? _searchController.text.trim() : null,
         onFilterResults: _handleFilterResults,
       ),
     );

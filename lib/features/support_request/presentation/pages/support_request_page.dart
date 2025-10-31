@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '/core/presentation/theme/app_colors.dart';
+import '../../domain/repositories/support_request_repository.dart';
 import 'support_request_form_page.dart';
 import 'pending_requests_page.dart';
 import 'processed_requests_page.dart';
 
 class SupportRequestPage extends StatefulWidget {
-  const SupportRequestPage({super.key});
+  final SupportRequestRepository repository;
+
+  const SupportRequestPage({super.key, required this.repository});
 
   @override
   State<SupportRequestPage> createState() => _SupportRequestPageState();
@@ -72,10 +75,10 @@ class _SupportRequestPageState extends State<SupportRequestPage>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [
-          SupportRequestFormPage(),
-          PendingRequestsPage(),
-          ProcessedRequestsPage(),
+        children: [
+          SupportRequestFormPage(repository: widget.repository),
+          PendingRequestsPage(repository: widget.repository),
+          ProcessedRequestsPage(repository: widget.repository),
         ],
       ),
     );
