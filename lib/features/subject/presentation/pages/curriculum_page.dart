@@ -126,30 +126,40 @@ class _CurriculumPageState extends State<CurriculumPage> {
           : Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                  padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        child: _MajorDropdown(
-                          majors: [
-                            ...{for (final s in _allSubjects) s.chuyenNganh}
-                          ],
-                          selected: _selectedMajor,
-                          onChanged: (val) {
-                            _selectedMajor = val?.isEmpty == true ? null : val;
-                            _applyFilters();
-                          },
+                        flex: 1,
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: _MajorDropdown(
+                            majors: [
+                              ...{for (final s in _allSubjects) s.chuyenNganh}
+                            ],
+                            selected: _selectedMajor,
+                            onChanged: (val) {
+                              _selectedMajor = val?.isEmpty == true ? null : val;
+                              _applyFilters();
+                            },
+                          ),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 8),
                       Expanded(
-                        child: TextField(
-                          controller: _searchController,
-                          decoration: const InputDecoration(
-                            prefixIcon: Icon(Icons.search),
-                            hintText: 'Tìm kiếm học phần...',
-                            isDense: true,
-                            border: OutlineInputBorder(),
+                        flex: 1,
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: TextField(
+                            controller: _searchController,
+                            decoration: const InputDecoration(
+                              prefixIcon: Icon(Icons.search, size: 20),
+                              hintText: 'Tìm kiếm...',
+                              isDense: true,
+                              border: OutlineInputBorder(),
+                              contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                            ),
                           ),
                         ),
                       ),
@@ -369,16 +379,47 @@ class _MajorDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = ['Tất cả', ...majors.toSet()];
-    return DropdownButtonFormField<String>(
-      value: selected ?? 'Tất cả',
-      items: items
-          .map((e) => DropdownMenuItem<String>(value: e, child: Text(e)))
-          .toList(),
-      onChanged: (val) => onChanged(val == 'Tất cả' ? '' : val),
-      decoration: const InputDecoration(
-        isDense: true,
-        border: OutlineInputBorder(),
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return DropdownButtonFormField<String>(
+          value: selected ?? 'Tất cả',
+          isExpanded: true,
+          icon: const Icon(Icons.arrow_drop_down, size: 20),
+          iconSize: 20,
+          items: items
+              .map((e) => DropdownMenuItem<String>(
+                    value: e,
+                    child: Text(
+                      e,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: const TextStyle(fontSize: 13),
+                    ),
+                  ))
+              .toList(),
+          onChanged: (val) => onChanged(val == 'Tất cả' ? '' : val),
+          decoration: InputDecoration(
+            isDense: true,
+            border: const OutlineInputBorder(),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+            hintText: constraints.maxWidth < 150 ? null : 'Tất cả',
+            hintStyle: const TextStyle(fontSize: 13),
+          ),
+          selectedItemBuilder: (context) {
+            return items.map((e) {
+              return SizedBox(
+                width: constraints.maxWidth - 40, // Trừ không gian cho icon
+                child: Text(
+                  e,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: const TextStyle(fontSize: 13),
+                ),
+              );
+            }).toList();
+          },
+        );
+      },
     );
   }
 }
