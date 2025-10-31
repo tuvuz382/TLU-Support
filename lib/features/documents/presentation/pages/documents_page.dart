@@ -265,9 +265,11 @@ class _DocumentsPageState extends State<DocumentsPage>
 
   Widget _buildDocumentCard(TaiLieuEntity document) {
     return InkWell(
-      onTap: () {
-        // Navigate to document detail page
-        context.push('/document-detail', extra: document);
+      onTap: () async {
+        // Navigate to document detail page and reload when returning
+        await context.push('/document-detail', extra: document);
+        // Reload documents when returning from detail page
+        _loadDocuments();
       },
       borderRadius: BorderRadius.circular(12),
       child: Container(

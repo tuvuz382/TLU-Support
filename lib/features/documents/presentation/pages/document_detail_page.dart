@@ -2,11 +2,94 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '/core/presentation/theme/app_colors.dart';
 import '../../../data_generator/domain/entities/tai_lieu_entity.dart';
+import '../../data/datasources/firebase_documents_datasource.dart';
+import '../../data/repositories/documents_repository_impl.dart';
+import '../../domain/repositories/documents_repository.dart';
+import '../../domain/usecases/toggle_favorite_usecase.dart';
 
-class DocumentDetailPage extends StatelessWidget {
+class DocumentDetailPage extends StatefulWidget {
   final TaiLieuEntity document;
 
   const DocumentDetailPage({super.key, required this.document});
+
+  @override
+  State<DocumentDetailPage> createState() => _DocumentDetailPageState();
+}
+
+class _DocumentDetailPageState extends State<DocumentDetailPage> {
+  late TaiLieuEntity _document;
+  late DocumentsRepository _repository;
+  late ToggleFavoriteUseCase _toggleFavoriteUseCase;
+  bool _isTogglingFavorite = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _document = widget.document;
+    _repository = DocumentsRepositoryImpl(FirebaseDocumentsDataSource());
+    _toggleFavoriteUseCase = ToggleFavoriteUseCase(_repository);
+  }
+
+  Future<void> _handleToggleFavorite() async {
+    if (_isTogglingFavorite) return;
+
+    setState(() {
+      _isTogglingFavorite = true;
+    });
+
+    try {
+      // Optimistic update: Cập nhật UI trước
+      final newFavoriteStatus = !_document.yeuThich;
+      setState(() {
+        _document = TaiLieuEntity(
+          maTL: _document.maTL,
+          tenTL: _document.tenTL,
+          maMon: _document.maMon,
+          duongDan: _document.duongDan,
+          moTa: _document.moTa,
+          yeuThich: newFavoriteStatus,
+        );
+      });
+
+      // Gọi UseCase để cập nhật Firestore
+      await _toggleFavoriteUseCase.call(_document.maTL, newFavoriteStatus);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              newFavoriteStatus
+                  ? 'Đã thêm vào yêu thích'
+                  : 'Đã xóa khỏi yêu thích',
+            ),
+            backgroundColor: AppColors.success,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      // Revert lại trạng thái cũ nếu lỗi
+      setState(() {
+        _document = widget.document;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi: ${e.toString()}'),
+            backgroundColor: AppColors.error,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isTogglingFavorite = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +103,9 @@ class DocumentDetailPage extends StatelessWidget {
           onPressed: () => context.pop(),
         ),
         title: Text(
-          document.tenTL.length > 30
-              ? '${document.tenTL.substring(0, 30)}...'
-              : document.tenTL,
+          _document.tenTL.length > 30
+              ? '${_document.tenTL.substring(0, 30)}...'
+              : _document.tenTL,
           style: const TextStyle(
             color: Colors.black,
             fontSize: 18,
@@ -59,7 +142,7 @@ class DocumentDetailPage extends StatelessWidget {
 
               // Document title
               Text(
-                document.tenTL,
+                _document.tenTL,
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -110,7 +193,7 @@ class DocumentDetailPage extends StatelessWidget {
               ),
               Expanded(
                 child: Text(
-                  _getSubjectName(document.maMon),
+                  _getSubjectName(_document.maMon),
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
@@ -157,7 +240,7 @@ class DocumentDetailPage extends StatelessWidget {
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Đang tải tài liệu: ${document.tenTL}'),
+                  content: Text('Đang tải tài liệu: ${_document.tenTL}'),
                   backgroundColor: AppColors.success,
                 ),
               );
@@ -181,25 +264,27 @@ class DocumentDetailPage extends StatelessWidget {
 
         const SizedBox(width: 12),
 
-        // Bookmark button
+        // Favorite button
         Container(
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey[300]!),
             borderRadius: BorderRadius.circular(8),
           ),
           child: IconButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Đã lưu vào bookmark'),
-                  duration: Duration(seconds: 1),
-                ),
-              );
-            },
-            icon: Icon(
-              document.yeuThich ? Icons.bookmark : Icons.bookmark_border,
-              color: document.yeuThich ? AppColors.primary : Colors.grey[700],
-            ),
+            onPressed: _isTogglingFavorite ? null : _handleToggleFavorite,
+            icon: _isTogglingFavorite
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                    ),
+                  )
+                : Icon(
+                    _document.yeuThich ? Icons.favorite : Icons.favorite_border,
+                    color: _document.yeuThich ? Colors.red : Colors.grey,
+                  ),
           ),
         ),
 
@@ -230,7 +315,7 @@ class DocumentDetailPage extends StatelessWidget {
   Widget _buildDocumentPreview() {
     // Tạo màu dựa trên môn học
     Color backgroundColor;
-    switch (document.maMon) {
+    switch (_document.maMon) {
       case 'MH001':
         backgroundColor = const Color(0xFFFF9800);
         break;
@@ -298,7 +383,7 @@ class DocumentDetailPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
-              document.tenTL.toUpperCase(),
+              _document.tenTL.toUpperCase(),
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: backgroundColor == const Color(0xFFE0E0E0)
@@ -323,7 +408,7 @@ class DocumentDetailPage extends StatelessWidget {
 
           // Subject info
           Text(
-            _getSubjectName(document.maMon),
+            _getSubjectName(_document.maMon),
             textAlign: TextAlign.center,
             style: TextStyle(
               color: backgroundColor == const Color(0xFFE0E0E0)
@@ -412,7 +497,7 @@ class DocumentDetailPage extends StatelessWidget {
             border: Border.all(color: Colors.grey[200]!),
           ),
           child: Text(
-            document.moTa,
+            _document.moTa,
             style: TextStyle(
               fontSize: 15,
               color: Colors.grey[800],
