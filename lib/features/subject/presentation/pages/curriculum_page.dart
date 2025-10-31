@@ -101,14 +101,15 @@ class _CurriculumPageState extends State<CurriculumPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
            onPressed: () => context.go('/'),
         ),
-        title: const Text('Chương trình đào tạo'),
+        title: const Text('Chương trình đào tạo', style: TextStyle(color: Colors.black)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: Colors.white),
+            icon: const Icon(Icons.notifications_outlined, color: Colors.black),
             onPressed: () => context.go('/notifications'),
           ),
         ],
