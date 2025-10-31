@@ -228,9 +228,13 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.primary),
+          icon: const Icon(Icons.arrow_back, color: Color.fromARGB(255, 0, 0, 0)),
           onPressed: () {
-            context.go('/profile');
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/profile');
+            }
           },
         ),
         title: const Text(
@@ -244,8 +248,8 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications, color: AppColors.primary),
-            onPressed: () {},
+            icon: const Icon(Icons.notifications_outlined, color: Colors.black),
+            onPressed: () => context.go('/notifications'),
           ),
         ],
       ),

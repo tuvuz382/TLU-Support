@@ -135,8 +135,8 @@ class _ScholarshipListPageState extends State<ScholarshipListPage> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.black),
-            onPressed: () {},
+            icon: const Icon(Icons.notifications_outlined, color: Colors.black),
+            onPressed: () => context.go('/notifications'),
           ),
         ],
       ),
