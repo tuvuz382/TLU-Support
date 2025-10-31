@@ -177,134 +177,177 @@ class _CurriculumPageState extends State<CurriculumPage> {
                             ],
                           ),
                         )
-                      : Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.05),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: SingleChildScrollView(
-                              child: DataTable(
-                                headingRowHeight: 56,
-                                dataRowMinHeight: 52,
-                                dataRowMaxHeight: 72,
-                                headingRowColor: WidgetStateProperty.all(
-                                  AppColors.primary.withValues(alpha: 0.1),
-                                ),
-                                columns: const [
-                                  DataColumn(
-                                    label: Text(
-                                      'STT',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ),
-                                  DataColumn(
-                                    label: Text(
-                                      'Mã học phần',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ),
-                                  DataColumn(
-                                    label: Text(
-                                      'Tên học phần',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ),
-                                  DataColumn(
-                                    label: Text(
-                                      'Số tín chỉ',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
-                                    ),
+                      : LayoutBuilder(
+                          builder: (context, constraints) {
+                            final screenWidth = constraints.maxWidth;
+                            final isSmallScreen = screenWidth < 400;
+                            
+                            // Tính toán font size và spacing dựa trên màn hình
+                            final fontSize = isSmallScreen ? 11.0 : 13.0;
+                            final columnSpacing = isSmallScreen ? 8.0 : 12.0;
+                            final horizontalMargin = isSmallScreen ? 8.0 : 16.0;
+                            
+                            return Container(
+                              margin: EdgeInsets.symmetric(horizontal: horizontalMargin),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.05),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
                                   ),
                                 ],
-                                rows: List<DataRow>.generate(
-                                  _filtered.length,
-                                  (index) {
-                                    final subject = _filtered[index];
-                                    return DataRow(
-                                      cells: [
-                                        DataCell(
-                                          Center(
+                              ),
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: SingleChildScrollView(
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      minWidth: screenWidth - (horizontalMargin * 2),
+                                    ),
+                                    child: DataTable(
+                                      headingRowHeight: isSmallScreen ? 48 : 56,
+                                      dataRowMinHeight: isSmallScreen ? 48 : 56,
+                                      dataRowMaxHeight: isSmallScreen ? 64 : 72,
+                                      columnSpacing: columnSpacing,
+                                      horizontalMargin: horizontalMargin,
+                                      headingRowColor: WidgetStateProperty.all(
+                                        AppColors.primary.withValues(alpha: 0.1),
+                                      ),
+                                      columns: [
+                                        DataColumn(
+                                          label: SizedBox(
+                                            width: isSmallScreen ? 35 : 50,
                                             child: Text(
-                                              '${index + 1}',
-                                              style: const TextStyle(fontSize: 14),
-                                            ),
-                                          ),
-                                        ),
-                                        DataCell(
-                                          Text(
-                                            subject.maMon,
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ),
-                                        DataCell(
-                                          InkWell(
-                                            child: Text(
-                                              subject.tenMon,
-                                              style: const TextStyle(
-                                                color: AppColors.primary,
-                                                decoration: TextDecoration.underline,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            onTap: () => context.push(
-                                              AppRoutes.subjectDetail,
-                                              extra: subject,
-                                            ),
-                                          ),
-                                        ),
-                                        DataCell(
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 4,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: AppColors.primary.withValues(alpha: 0.1),
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
-                                            child: Text(
-                                              subject.soTinChi.toString(),
-                                              style: const TextStyle(
-                                                fontSize: 14,
+                                              'STT',
+                                              style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                color: AppColors.primary,
+                                                fontSize: fontSize,
                                               ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: SizedBox(
+                                            width: isSmallScreen ? 80 : 100,
+                                            child: Text(
+                                              isSmallScreen ? 'Mã HP' : 'Mã học phần',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: fontSize,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Tên học phần',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: fontSize,
+                                            ),
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: SizedBox(
+                                            width: isSmallScreen ? 50 : 70,
+                                            child: Text(
+                                              isSmallScreen ? 'TC' : 'Số tín chỉ',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: fontSize,
+                                              ),
+                                              textAlign: TextAlign.center,
                                             ),
                                           ),
                                         ),
                                       ],
-                                    );
-                                  },
+                                      rows: List<DataRow>.generate(
+                                        _filtered.length,
+                                        (index) {
+                                          final subject = _filtered[index];
+                                          return DataRow(
+                                            cells: [
+                                              DataCell(
+                                                SizedBox(
+                                                  width: isSmallScreen ? 35 : 50,
+                                                  child: Center(
+                                                    child: Text(
+                                                      '${index + 1}',
+                                                      style: TextStyle(fontSize: fontSize),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              DataCell(
+                                                SizedBox(
+                                                  width: isSmallScreen ? 80 : 100,
+                                                  child: Text(
+                                                    subject.maMon,
+                                                    style: TextStyle(
+                                                      fontSize: fontSize,
+                                                      fontWeight: FontWeight.w500,
+                                                    ),
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                              ),
+                                              DataCell(
+                                                InkWell(
+                                                  child: Text(
+                                                    subject.tenMon,
+                                                    style: TextStyle(
+                                                      color: AppColors.primary,
+                                                      fontSize: fontSize,
+                                                      fontWeight: FontWeight.w500,
+                                                    ),
+                                                    overflow: TextOverflow.ellipsis,
+                                                    maxLines: 2,
+                                                  ),
+                                                  onTap: () => context.push(
+                                                    AppRoutes.subjectDetail,
+                                                    extra: subject,
+                                                  ),
+                                                ),
+                                              ),
+                                              DataCell(
+                                                SizedBox(
+                                                  width: isSmallScreen ? 50 : 70,
+                                                  child: Center(
+                                                    child: Container(
+                                                      padding: EdgeInsets.symmetric(
+                                                        horizontal: isSmallScreen ? 6 : 10,
+                                                        vertical: isSmallScreen ? 3 : 5,
+                                                      ),
+                                                      decoration: BoxDecoration(
+                                                        color: AppColors.primary.withValues(alpha: 0.1),
+                                                        borderRadius: BorderRadius.circular(8),
+                                                      ),
+                                                      child: Text(
+                                                        subject.soTinChi.toString(),
+                                                        style: TextStyle(
+                                                          fontSize: fontSize,
+                                                          fontWeight: FontWeight.bold,
+                                                          color: AppColors.primary,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
+                            );
+                          },
                         ),
                 ),
               ],

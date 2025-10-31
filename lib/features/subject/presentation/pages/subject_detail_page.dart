@@ -88,7 +88,7 @@ class SubjectDetailPage extends StatelessWidget {
             _SectionCard(
               title: 'Mục tiêu môn học',
               child: Padding(
-                padding: const EdgeInsets.all(4),
+                padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Text(
                   subject.moTa.isEmpty
                       ? 'Nội dung sẽ được cập nhật.'
@@ -192,6 +192,8 @@ class _InfoChip extends StatelessWidget {
 class _SubjectDocuments extends StatelessWidget {
   final String maMon;
   const _SubjectDocuments({required this.maMon});
+  
+
 
   @override
   Widget build(BuildContext context) {
@@ -401,5 +403,4 @@ class _TeacherCard extends StatelessWidget {
     );
   }
 }
-
 
