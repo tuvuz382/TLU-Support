@@ -42,6 +42,16 @@ class _NotificationsPageState extends State<NotificationsPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF3F2F8),
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/');
+            }
+          },
+        ),
         title: const Text('Thông báo'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,

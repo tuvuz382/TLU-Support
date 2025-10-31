@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'notifications_page.dart';
 import '../../domain/entities/notification_item.dart';
 
 class NotificationDetailPage extends StatelessWidget {
@@ -41,7 +40,7 @@ class NotificationDetailPage extends StatelessWidget {
                       // Nút back
                       IconButton(
                         icon: const Icon(Icons.arrow_back, color: Colors.black),
-                        onPressed: () => context.go('/notifications'),
+                        onPressed: () => context.pop(),
                       ),
                       const Expanded(
                         child: Text(
