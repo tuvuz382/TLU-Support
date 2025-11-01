@@ -83,5 +83,19 @@ class FirebaseTeacherDataSource {
       throw Exception('Lỗi khi thêm đánh giá: $e');
     }
   }
+
+  Future<bool> hasReviewedTeacher(String maGV, String maSV) async {
+    try {
+      final snapshot = await _firestore
+          .collection('danhGia')
+          .where('maGV', isEqualTo: maGV)
+          .where('maSV', isEqualTo: maSV)
+          .limit(1)
+          .get();
+      return snapshot.docs.isNotEmpty;
+    } catch (e) {
+      throw Exception('Lỗi khi kiểm tra đánh giá: $e');
+    }
+  }
 }
 

@@ -7,5 +7,6 @@ abstract class TeacherRepository {
   Future<List<GiangVienEntity>> searchTeachers(String query);
   Future<List<DanhGiaEntity>> getReviewsByTeacher(String maGV);
   Future<void> addReview(DanhGiaEntity review);
+  Future<bool> hasReviewedTeacher(String maGV, String maSV);
 }
 

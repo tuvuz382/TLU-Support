@@ -5,6 +5,7 @@ class DanhGiaEntity extends Equatable {
   final String maGV;
   final String maSV;
   final String noiDung;
+  final int danhGia;  // Điểm đánh giá từ 1-5 sao
   final DateTime ngayDanhGia;
 
   const DanhGiaEntity({
@@ -12,6 +13,7 @@ class DanhGiaEntity extends Equatable {
     required this.maGV,
     required this.maSV,
     required this.noiDung,
+    required this.danhGia,
     required this.ngayDanhGia,
   });
 
@@ -21,6 +23,7 @@ class DanhGiaEntity extends Equatable {
       'maGV': maGV,
       'maSV': maSV,
       'noiDung': noiDung,
+      'danhGia': danhGia,
       'ngayDanhGia': ngayDanhGia.toIso8601String(),
     };
   }
@@ -31,6 +34,7 @@ class DanhGiaEntity extends Equatable {
       maGV: data['maGV'] ?? '',
       maSV: data['maSV'] ?? '',
       noiDung: data['noiDung'] ?? '',
+      danhGia: data['danhGia'] ?? 5,
       ngayDanhGia: DateTime.parse(data['ngayDanhGia'] ?? DateTime.now().toIso8601String()),
     );
   }
@@ -41,6 +45,7 @@ class DanhGiaEntity extends Equatable {
         maGV,
         maSV,
         noiDung,
+        danhGia,
         ngayDanhGia,
       ];
 }

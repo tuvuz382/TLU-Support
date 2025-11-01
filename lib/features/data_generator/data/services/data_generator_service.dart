@@ -425,6 +425,7 @@ class DataGeneratorService {
         maGV: 'GV001',
         maSV: 'SV001',
         noiDung: 'Giảng viên giảng dạy rất nhiệt tình và dễ hiểu, phương pháp giảng dạy linh hoạt',
+        danhGia: 5,
         ngayDanhGia: DateTime(2024, 1, 15),
       ),
       DanhGiaEntity(
@@ -432,6 +433,7 @@ class DataGeneratorService {
         maGV: 'GV001',
         maSV: 'SV002',
         noiDung: 'Giảng viên có kiến thức sâu rộng, luôn sẵn sàng hỗ trợ sinh viên trong quá trình học tập',
+        danhGia: 5,
         ngayDanhGia: DateTime(2024, 1, 16),
       ),
       DanhGiaEntity(
@@ -439,6 +441,7 @@ class DataGeneratorService {
         maGV: 'GV002',
         maSV: 'SV001',
         noiDung: 'Giảng viên giải thích rõ ràng, bài giảng có cấu trúc tốt và dễ theo dõi',
+        danhGia: 4,
         ngayDanhGia: DateTime(2024, 1, 20),
       ),
       DanhGiaEntity(
@@ -446,6 +449,7 @@ class DataGeneratorService {
         maGV: 'GV003',
         maSV: 'SV003',
         noiDung: 'Giảng viên có phong cách giảng dạy thú vị, tạo không khí học tập tích cực',
+        danhGia: 5,
         ngayDanhGia: DateTime(2024, 1, 25),
       ),
       DanhGiaEntity(
@@ -453,6 +457,7 @@ class DataGeneratorService {
         maGV: 'GV005',
         maSV: 'SV005',
         noiDung: 'Giảng viên rất chuyên nghiệp, luôn cập nhật kiến thức mới và áp dụng vào giảng dạy',
+        danhGia: 4,
         ngayDanhGia: DateTime(2024, 2, 1),
       ),
     ];
