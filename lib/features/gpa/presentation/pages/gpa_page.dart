@@ -14,6 +14,7 @@ import '../../domain/usecases/calculate_gpa_summary_usecase.dart';
 import '../../domain/entities/gpa_summary_entity.dart';
 import '../../domain/usecases/get_grades_by_student_usecase.dart';
 import '../../domain/usecases/get_all_subjects_usecase.dart';
+import '../../domain/usecases/save_gpa_to_student_usecase.dart';
 
 class GPAPage extends StatefulWidget {
   const GPAPage({super.key});
@@ -29,6 +30,7 @@ class _GPAPageState extends State<GPAPage> with SingleTickerProviderStateMixin {
   late CalculateGPASummaryUseCase _calculateGPASummaryUseCase;
   late GetGradesByStudentUseCase _getGradesByStudentUseCase;
   late GetAllSubjectsUseCase _getAllSubjectsUseCase;
+  late SaveGPAToStudentUseCase _saveGPAToStudentUseCase;
 
   SinhVienEntity? _currentStudent;
   List<BangDiemEntity> _allGrades = [];
@@ -63,6 +65,9 @@ class _GPAPageState extends State<GPAPage> with SingleTickerProviderStateMixin {
     final gpaRepo = GPARepositoryImpl(FirebaseGPADataSource());
     _getGradesByStudentUseCase = GetGradesByStudentUseCase(gpaRepo);
     _getAllSubjectsUseCase = GetAllSubjectsUseCase(gpaRepo);
+    
+    // Initialize Save GPA Use Case
+    _saveGPAToStudentUseCase = SaveGPAToStudentUseCase(profileDataSource);
 
     _loadData();
   }
@@ -109,6 +114,11 @@ class _GPAPageState extends State<GPAPage> with SingleTickerProviderStateMixin {
         _selectedNamHoc = years.last.toString();
       }
 
+      // Auto-save GPA total to student profile
+      if (allGrades.isNotEmpty && subjects.isNotEmpty) {
+        _saveTotalGPAToStudent(studentProfile.maSV, allGrades, subjects);
+      }
+
       setState(() {
         _allGrades = allGrades;
         _subjects = subjects;
@@ -146,6 +156,34 @@ class _GPAPageState extends State<GPAPage> with SingleTickerProviderStateMixin {
       allGrades: _allGrades,
       subjects: _subjects,
     );
+  }
+
+  /// Lưu GPA tổng hợp vào profile sinh viên
+  Future<void> _saveTotalGPAToStudent(
+    String maSV,
+    List<BangDiemEntity> allGrades,
+    List<MonHocEntity> subjects,
+  ) async {
+    try {
+      // Tính GPA summary
+      final summaries = _calculateGPASummaryUseCase(
+        allGrades: allGrades,
+        subjects: subjects,
+      );
+
+      // Tìm GPA toàn khóa
+      final totalGPASummary = summaries.firstWhere(
+        (summary) => summary.namHoc == 'Toàn khóa' && summary.hocKy == 'Toàn khóa',
+      );
+
+      // Lưu vào Firebase - sử dụng GPA hệ 4
+      await _saveGPAToStudentUseCase(
+        maSV,
+        totalGPASummary.gpaResult.gpaHe4,
+      );
+    } catch (e) {
+      print('Lỗi khi auto-save GPA: $e');
+    }
   }
 
   String _getSubjectName(String maMon) {

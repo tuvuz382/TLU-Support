@@ -164,4 +164,23 @@ class StudentProfileRemoteDataSource {
     final snapshot = await _collection.limit(1).get();
     return snapshot.docs.isNotEmpty;
   }
+
+  /// Cập nhật một field cụ thể theo mã sinh viên
+  Future<void> updateStudentFieldByMaSV(
+    String maSV,
+    String fieldName,
+    dynamic value,
+  ) async {
+    final snapshot = await _collection
+        .where('maSV', isEqualTo: maSV)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final docId = snapshot.docs.first.id;
+      await _collection.doc(docId).update({fieldName: value});
+    } else {
+      throw Exception('Không tìm thấy sinh viên với mã SV: $maSV');
+    }
+  }
 }
