@@ -3,14 +3,18 @@ import '/core/presentation/theme/app_colors.dart';
 import '../../../data_generator/domain/entities/tai_lieu_entity.dart';
 import '../../domain/usecases/filter_documents_usecase.dart';
 import '../../domain/usecases/get_available_subjects_usecase.dart';
+import '../../domain/usecases/search_documents_usecase.dart';
+import '../../domain/repositories/documents_repository.dart';
 
 class FilterDialog extends StatefulWidget {
-  final List<TaiLieuEntity> allDocuments;
+  final DocumentsRepository repository;
+  final String? currentSearchQuery;
   final Function(List<TaiLieuEntity>) onFilterResults;
 
   const FilterDialog({
     super.key,
-    required this.allDocuments,
+    required this.repository,
+    this.currentSearchQuery,
     required this.onFilterResults,
   });
 
@@ -25,17 +29,39 @@ class _FilterDialogState extends State<FilterDialog> {
 
   late FilterDocumentsUseCase _filterUseCase;
   late GetAvailableSubjectsUseCase _getSubjectsUseCase;
+  List<TaiLieuEntity>? _allDocumentsCache;
 
   @override
   void initState() {
     super.initState();
-    _filterUseCase = FilterDocumentsUseCase();
+    _filterUseCase = FilterDocumentsUseCase(widget.repository);
     _getSubjectsUseCase = GetAvailableSubjectsUseCase();
+    _loadDocumentsForFilter();
+  }
+
+  // Load documents to get available subjects
+  Future<void> _loadDocumentsForFilter() async {
+    try {
+      if (widget.currentSearchQuery != null &&
+          widget.currentSearchQuery!.trim().isNotEmpty) {
+        // If searching, use search results
+        final searchUseCase = SearchDocumentsUseCase(widget.repository);
+        _allDocumentsCache = await searchUseCase.call(
+          widget.currentSearchQuery!,
+        );
+      } else {
+        // Otherwise get all documents
+        _allDocumentsCache = await widget.repository.getAllDocuments();
+      }
+    } catch (e) {
+      _allDocumentsCache = [];
+    }
+    setState(() {}); // Update UI with available subjects
   }
 
   // Get unique subjects from documents using UseCase
   List<String> get _availableSubjects {
-    return _getSubjectsUseCase.call(widget.allDocuments);
+    return _getSubjectsUseCase.call(_allDocumentsCache ?? []);
   }
 
   @override
@@ -256,10 +282,10 @@ class _FilterDialogState extends State<FilterDialog> {
     });
   }
 
-  void _applyFilters() {
-    // Use UseCase for filtering
-    final filteredDocuments = _filterUseCase.call(
-      documents: widget.allDocuments,
+  Future<void> _applyFilters() async {
+    // Use UseCase for filtering (following Clean Architecture)
+    final filteredDocuments = await _filterUseCase.call(
+      searchQuery: widget.currentSearchQuery,
       subject: _selectedSubject,
       favoriteStatus: _favoriteFilter,
       sortBy: _selectedSortBy,

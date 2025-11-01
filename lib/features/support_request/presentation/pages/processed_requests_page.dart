@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import '/core/presentation/theme/app_colors.dart';
 import '../../../data_generator/domain/entities/lien_he_entity.dart';
-import '../../data/datasources/firebase_support_request_datasource.dart';
-import '../../data/repositories/support_request_repository_impl.dart';
 import '../../domain/repositories/support_request_repository.dart';
 import '../../domain/usecases/get_processed_requests_usecase.dart';
 import '../widgets/support_request_card.dart';
 
 class ProcessedRequestsPage extends StatefulWidget {
-  const ProcessedRequestsPage({super.key});
+  final SupportRequestRepository repository;
+
+  const ProcessedRequestsPage({super.key, required this.repository});
 
   @override
   State<ProcessedRequestsPage> createState() => _ProcessedRequestsPageState();
@@ -24,9 +24,7 @@ class _ProcessedRequestsPageState extends State<ProcessedRequestsPage> {
   @override
   void initState() {
     super.initState();
-    _repository = SupportRequestRepositoryImpl(
-      FirebaseSupportRequestDataSource(),
-    );
+    _repository = widget.repository;
     _getProcessedRequestsUseCase = GetProcessedRequestsUseCase(_repository);
     _loadProcessedRequests();
   }

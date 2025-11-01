@@ -34,6 +34,9 @@ import '../../features/scholarship/presentation/pages/registered_scholarships_pa
 // Features - Support Request
 import '../../features/support_request/presentation/pages/support_request_page.dart';
 import '../../features/support_request/presentation/pages/support_request_detail_page.dart';
+import '../../features/support_request/domain/repositories/support_request_repository.dart';
+import '../../features/support_request/data/repositories/support_request_repository_impl.dart';
+import '../../features/support_request/data/datasources/firebase_support_request_datasource.dart';
 
 // Features - GPA
 import '../../features/gpa/presentation/pages/gpa_page.dart';
@@ -50,6 +53,8 @@ import '../../core/presentation/layouts/main_layout.dart';
 
 class AppGoRouter {
   static final AuthRepository _authRepository = AuthRepositoryImpl();
+  static final SupportRequestRepository _supportRequestRepository =
+      SupportRequestRepositoryImpl(FirebaseSupportRequestDataSource());
 
   static final GoRouter router = GoRouter(
     initialLocation: AppRoutes.login,
@@ -161,7 +166,8 @@ class AppGoRouter {
           ),
           GoRoute(
             path: AppRoutes.supportRequest,
-            builder: (context, state) => const SupportRequestPage(),
+            builder: (context, state) =>
+                SupportRequestPage(repository: _supportRequestRepository),
           ),
           GoRoute(
             path: AppRoutes.supportRequestDetail,

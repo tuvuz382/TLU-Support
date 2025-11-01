@@ -497,11 +497,8 @@ class _DocumentsPageState extends State<DocumentsPage>
     }
 
     try {
-      // Use UseCase for search
-      final results = await _searchUseCase.call(
-        query,
-        documents: _allDocuments,
-      );
+      // Use UseCase for search (Clean Architecture: only pass query)
+      final results = await _searchUseCase.call(query);
       setState(() {
         _filteredDocuments = results;
       });
@@ -526,7 +523,8 @@ class _DocumentsPageState extends State<DocumentsPage>
     showDialog(
       context: context,
       builder: (context) => FilterDialog(
-        allDocuments: _isSearching ? _filteredDocuments : _allDocuments,
+        repository: _repository,
+        currentSearchQuery: _isSearching ? _searchController.text.trim() : null,
         onFilterResults: _handleFilterResults,
       ),
     );
